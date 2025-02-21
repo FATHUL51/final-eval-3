@@ -128,27 +128,24 @@ const Signup = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    let isValid = true; // Flag to check form validity
+    let isValid = true;
 
-    // Validate First Name
     if (!firstname.trim()) {
-      setFirstnameError("First name is required minimum 3 charecters.");
+      setFirstnameError("First name is required minimum 3 characters.");
       isValid = false;
     } else {
-      setFirstnameError(""); // Clear error if valid
+      setFirstnameError("");
     }
 
-    // Validate Checkbox
     if (!isChecked) {
       setCheckboxError(
         "You must agree to the Terms of Use and Privacy Policy."
       );
       isValid = false;
     } else {
-      setCheckboxError(""); // Clear error if valid
+      setCheckboxError("");
     }
 
-    // Stop form submission if validation fails
     if (!isValid) return;
 
     const newUser = { firstname, lastname, email, password };
