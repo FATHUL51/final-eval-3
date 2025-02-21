@@ -28,6 +28,13 @@ router.post("/signup", async (req, res) => {
       email,
       password: hashedPassword,
     });
+    const payload = { id: user._id };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "24h",
+    });
+
+    // Secure cookie options
+    res.cookie("token", token);
 
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
