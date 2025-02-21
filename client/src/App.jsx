@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import UserProtectedWrapper from "./Pages/UserProtectedWrapper";
+import UserProtectedWrapper from "./pages/UserProtectedWrapper"; // Corrected path
 import Dashboard from "./pages/Dashborad";
 import Signup from "./pages/Signup/Signup";
 import Login from "./pages/Login/Login";
