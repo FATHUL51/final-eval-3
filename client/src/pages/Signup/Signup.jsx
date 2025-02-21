@@ -158,8 +158,14 @@ const Signup = () => {
 
       if (response.status === 201) {
         const data = response.data;
+
+        if (data.token) {
+          localStorage.setItem("token", data.token); // Store token in localStorage
+        } else {
+          throw new Error("No token received from server");
+        }
+
         setUser(data.user);
-        localStorage.setItem("token", data.token);
         showSuccessToast("User created successfully");
         navigate("/userpreference");
       }
@@ -169,10 +175,9 @@ const Signup = () => {
         (error.request
           ? "No response from the server. Please try again later."
           : `An error occurred: ${error.message}`);
-      showErrorToast(` ${errorMessage}`);
+      showErrorToast(errorMessage);
     }
 
-    // Reset Form (only if the user is successfully registered)
     setFirstname("");
     setLastname("");
     setEmail("");
