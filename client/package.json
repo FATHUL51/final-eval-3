@@ -10,10 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@remixicon/react": "^4.6.0",
     "axios": "^1.7.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.5",
+    "remixicon": "^4.6.0",
+    "styled-components": "^6.1.15",
     "toastify": "^2.0.1",
     "toastify-js": "^1.12.0"
   },

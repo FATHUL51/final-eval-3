@@ -13,8 +13,13 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [data, setData] = useState({});
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible((prevState) => !prevState);
+  };
 
   const { user, setUser } = useContext(UserDataContext);
   const showSuccessToast = (message) => {
@@ -90,17 +95,33 @@ const Login = () => {
               placeholder="Spark/Username"
               minLength={6}
             />
-            <input
-              className="passinput"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-              placeholder="Password"
-              minLength={6}
-            />
+            <div
+              className="password-container"
+              style={{ position: "relative" }}
+            >
+              <input
+                className="passinput"
+                type={isPasswordVisible ? "text" : "password"} // Toggle password visibility
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                minLength={6}
+              />
+              <i
+                className={
+                  isPasswordVisible ? "ri-eye-off-line" : "ri-eye-line"
+                } // Change icon based on visibility
+                onClick={togglePasswordVisibility} // Toggle password visibility on click
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "10px",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                }}
+              ></i>
+            </div>
             <button className="register">Log in</button>
             <p className="signup">
               Don't have an account ?

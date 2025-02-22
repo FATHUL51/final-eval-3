@@ -61,6 +61,7 @@ body{
 
 }
 .passinput{
+    width: 96.5%;
     height: 2.5rem;
     border: none;
     border-radius: 0.4rem;
