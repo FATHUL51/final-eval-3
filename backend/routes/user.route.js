@@ -122,7 +122,7 @@ router.put("/update", authMiddleware, async (req, res) => {
   }
 });
 // Create or update user preferences
-router.post("/userpreference", authMiddleware, async (req, res) => {
+router.put("/userpreference", authMiddleware, async (req, res) => {
   const { selectedCategory, usernameChange } = req.body;
 
   try {
@@ -145,27 +145,5 @@ router.post("/userpreference", authMiddleware, async (req, res) => {
   }
 });
 // Update username and category
-router.put("/updateUserPreference", authMiddleware, async (req, res) => {
-  const { username, category } = req.body;
-
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    if (username) user.username = username;
-    if (category) user.category = category;
-
-    await user.save();
-
-    res
-      .status(200)
-      .json({ message: "User preferences updated successfully", data: user });
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: `${error}` });
-  }
-});
 
 module.exports = router;

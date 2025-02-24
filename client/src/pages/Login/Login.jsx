@@ -58,7 +58,7 @@ const Login = () => {
         setUser(data.user);
         localStorage.setItem("token", data.token);
         showSuccessToast("Successfully logged in");
-        navigate("/home");
+        navigate("/links");
         window.location.reload();
       }
     } catch (error) {

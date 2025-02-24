@@ -3,6 +3,7 @@ const app = express();
 const dotenv = require("dotenv");
 const { default: mongoose } = require("mongoose");
 const userRoute = require("./routes/user.route");
+const linkRoute = require("./routes/links.route");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(device.capture());
 app.use(cookieParser());
 app.use("/api/user", userRoute);
+app.use("/api/link", linkRoute);
 app.get("/", (req, res) => {
   res.send("hello");
 });

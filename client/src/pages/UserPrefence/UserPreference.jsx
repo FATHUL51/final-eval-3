@@ -78,7 +78,7 @@ const UserPreference = () => {
         const data = response.data;
         localStorage.setItem("token", data.token);
         showSuccessToast("Successfully logged in");
-        navigate("/home");
+        navigate("/links");
         window.location.reload();
       }
     } catch (error) {

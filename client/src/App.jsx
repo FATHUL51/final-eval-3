@@ -6,6 +6,10 @@ import Signup from "./pages/Signup/Signup";
 import Login from "./pages/Login/Login";
 import Home from "./pages/Home";
 import UserPreference from "./pages/UserPrefence/UserPreference";
+import Links from "./pages/Layout/Links";
+import Settings from "./pages/Settings/Settings";
+import Analytixs from "./pages/Analytixs/Analytixs";
+import Appearence from "./pages/Appearance/Appearence";
 
 const App = () => {
   return (
@@ -25,6 +29,38 @@ const App = () => {
           element={
             <UserProtectedWrapper>
               <UserPreference />
+            </UserProtectedWrapper>
+          }
+        />
+        <Route
+          path="/links"
+          element={
+            <UserProtectedWrapper>
+              <Links />
+            </UserProtectedWrapper>
+          }
+        />
+        <Route
+          path="/appearance"
+          element={
+            <UserProtectedWrapper>
+              <Appearence />
+            </UserProtectedWrapper>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <UserProtectedWrapper>
+              <Analytixs />
+            </UserProtectedWrapper>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <UserProtectedWrapper>
+              <Settings />
             </UserProtectedWrapper>
           }
         />
