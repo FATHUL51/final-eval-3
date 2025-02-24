@@ -194,7 +194,7 @@ const Signup = () => {
       duration: 3000,
       close: false,
       gravity: "top",
-      position: "right",
+      position: "center",
       className: "toastify success-toast",
       escapeMarkup: false,
     }).showToast();
@@ -206,7 +206,7 @@ const Signup = () => {
       duration: 3000,
       close: false,
       gravity: "top",
-      position: "right",
+      position: "center",
       className: "toastify error-toast",
       escapeMarkup: false,
     }).showToast();

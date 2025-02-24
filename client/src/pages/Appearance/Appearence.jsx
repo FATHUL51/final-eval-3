@@ -6,7 +6,9 @@ import Navbar from "../../components/navbar/Naavbar";
 const Appearence = () => {
   return (
     <div className="container1">
-      <Sidebar />
+      <div className="main-content">
+        <Sidebar />
+      </div>
       <Navbar />
     </div>
   );
