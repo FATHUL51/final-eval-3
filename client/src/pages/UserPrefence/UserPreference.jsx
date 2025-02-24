@@ -75,8 +75,6 @@ const UserPreference = () => {
       );
 
       if (response.status === 200) {
-        const data = response.data;
-        localStorage.setItem("token", data.token);
         showSuccessToast("Successfully logged in");
         navigate("/links");
         window.location.reload();
