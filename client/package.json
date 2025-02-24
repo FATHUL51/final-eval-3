@@ -15,6 +15,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.5",
+    "recharts": "^2.15.1",
     "remixicon": "^4.6.0",
     "styled-components": "^6.1.15",
     "toastify": "^2.0.1",

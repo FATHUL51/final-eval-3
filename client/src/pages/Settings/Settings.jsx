@@ -99,7 +99,7 @@ const Settings = () => {
   return (
     <div className="container1">
       <Sidebar />
-      <div className="main-container">
+      <div className="main-content">
         <Navbar />
         <div className={styles.formContainer}>
           <div className={styles.sectionTitle}>

@@ -124,33 +124,49 @@ const Appearence = () => {
                 <div className="layout-buttons1">
                   <p>Hard shadow</p>
                   <div className="layout-buttons2">
-                    <button className="colopatlet7">x</button>
-                    <button className="colopatlet8">x</button>
-                    <button className="colopatlet9">x</button>
+                    <button className="colopatlet7"></button>
+                    <button className="colopatlet8"></button>
+                    <button className="colopatlet9"></button>
                   </div>
                 </div>
                 <div className="layout-buttons1">
                   <p>Soft shadow</p>
                   <div className="layout-buttons2">
-                    <button className="colopatlet10">x</button>
-                    <button className="colopatlet11">x</button>
-                    <button className="colopatlet12">x</button>
+                    <button className="colopatlet10"></button>
+                    <button className="colopatlet11"></button>
+                    <button className="colopatlet12"></button>
                   </div>
                 </div>
                 <div className="layout-buttons12">
                   <p>Special</p>
                   <div className="layout-buttons3">
-                    <button className="colopatlet13">x</button>
-                    <button className="colopatlet14">x</button>
-                    <button className="colopatlet15">x</button>
-                    <button className="colopatlet16">x</button>
-                    <button className="colopatlet17">x</button>
-                    <button className="colopatlet18">x</button>
+                    <button className="colopatlet13"></button>
+                    <button className="colopatlet14"></button>
+                    <button className="colopatlet15"></button>
+                    <button className="colopatlet16"></button>
+                    <button className="colopatlet17"></button>
+                    <button className="colopatlet18"></button>
                   </div>
                 </div>
-                <div className="6">
-                  <div className="1">x</div>
-                  <div className="1">x</div>
+                <div className="Button-color">
+                  <p>Button color</p>
+                  <div className="buttonconts1">
+                    <input className="inputofcolor" type="color" />
+                    <div className="bucont">
+                      <p className="butext">Button color</p>
+                      <input type="text" className="buinp" value={"#0000"} />
+                    </div>
+                  </div>
+                </div>
+                <div className="Button-color">
+                  <p>Button font color</p>
+                  <div className="buttonconts1">
+                    <input className="inputofcolor" type="color" />
+                    <div className="bucont">
+                      <p className="butext">Button font color</p>
+                      <input type="text" className="buinp" value={"#fff"} />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
