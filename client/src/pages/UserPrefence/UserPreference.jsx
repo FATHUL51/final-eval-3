@@ -63,7 +63,7 @@ const UserPreference = () => {
     }
 
     try {
-      const response = await axios.post(
+      const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/user/userpreference`,
         { selectedCategory, usernameChange },
         {
