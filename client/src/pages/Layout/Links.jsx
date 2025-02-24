@@ -107,7 +107,7 @@ function Links() {
                 </div>
                 <div className="profile-buttons">
                   <label className="custom-file-upload">
-                    <input type="file" src="" alt="" />
+                    <input type="file" />
                     Pick an image
                   </label>
                   <button className="remove">Remove</button>
