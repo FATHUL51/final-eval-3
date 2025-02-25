@@ -38,7 +38,7 @@ const UserPreference = () => {
       duration: 3000,
       close: true,
       gravity: "top",
-      position: "right",
+      position: "center",
       className: "toastify success-toast",
     }).showToast();
   };
@@ -49,7 +49,7 @@ const UserPreference = () => {
       duration: 3000,
       close: true,
       gravity: "top",
-      position: "right",
+      position: "center",
       className: "toastify error-toast",
     }).showToast();
   };
