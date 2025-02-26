@@ -7,6 +7,7 @@ import Carousel from "../../assets/components/Group 1171274799.png";
 import stack from "../../assets/components/Group 1171274801.png";
 import "./Appearence.css";
 import styleArray from "../../components/array of style/styleArray";
+import axios from "axios";
 
 const Appearence = () => {
   const [selectedTab, setSelectedTab] = useState("Link");
@@ -19,6 +20,8 @@ const Appearence = () => {
   const [frameStyle, setFrameStyle] = useState(styleArray["colopatlet3"]);
   const [selectedTheme, setSelectedTheme] = useState("Themecont1");
   const [frameBgColor, setFrameBgColor] = useState("#ffffff");
+  const [selectedLayout, setSelectedLayout] = useState("stack");
+  const [selectedFont, setSelectedFont] = useState("DM Sans");
 
   // Button groups
   const buttonGroups = [
@@ -47,6 +50,15 @@ const Appearence = () => {
       ],
     },
   ];
+  const themeMapping = {
+    "Air Snow": "Themecont1",
+    "Air Gray": "Themecont2",
+    "Air Smoke": "Themecont3",
+    "Air Black": "Themecont4",
+    "Mineral Blue": "Themecont5",
+    "Mineral Green": "Themecont6",
+    "Mineral Orange": "Themecont7",
+  };
 
   const handleButtonClick = (button) => {
     setSelected(button);
@@ -182,13 +194,86 @@ const Appearence = () => {
       setFrameBgColor(computedStyle.backgroundColor);
     }
   };
+
+  // Fetch Appearance Settings from Backend
+  const fetchAppearanceSettings = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/appearance`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.data.appearance) {
+        const { layout, button, button_text, font, fontcolor, themes } =
+          response.data.appearance;
+
+        setSelectedLayout(layout);
+        setSelected(button);
+        setButtonTextColor(button_text);
+        setSelectedFont(font);
+        setSelectedTheme(themeMapping[themes] || "Themecont1");
+
+        // Apply styles to frame
+        const newFrameStyle = {
+          ...(styleArray[button] || {}),
+          backgroundColor: buttonColor,
+          color: button_text,
+          fontFamily: font,
+        };
+
+        setFrameStyle(newFrameStyle);
+        setFrameBgColor(buttonColor);
+      }
+    } catch (error) {
+      console.error("Error fetching appearance settings:", error);
+    }
+  };
+
+  // Save Appearance to Backend
+  const handleSaveAppearance = async () => {
+    const reverseThemeMapping = Object.entries(themeMapping).reduce(
+      (acc, [key, value]) => ({ ...acc, [value]: key }),
+      {}
+    );
+
+    const appearanceData = {
+      layout: selectedLayout,
+      button: selected,
+      button_text: buttonTextColor,
+      font: selectedFont,
+      fontcolor: buttonTextColor,
+      themes: reverseThemeMapping[selectedTheme] || "Air Snow",
+    };
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/appearance`,
+        appearanceData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log("Appearance updated!");
+    } catch (error) {
+      console.error("Error updating appearance:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppearanceSettings();
+  }, []);
+
   return (
     <div className="container1">
       <Sidebar />
       <div className="main-content">
         <Navbar />
         <div className="content-wrapper">
-          <div className="frame-section" style={{ paddingTop: "2rem" }}>
+          <div className="frame-section">
             <div className="frame" style={{ backgroundColor: frameBgColor }}>
               <div className="frame-username">
                 <img
@@ -238,7 +323,25 @@ const Appearence = () => {
                     ))}
                   </div>
                 ) : (
-                  <p>Showing Shop Content</p>
+                  <div className="frame-links">
+                    {[
+                      "Latest Tshirt shopify",
+                      "Latest pant olx",
+                      "Latest shirt shopify",
+                      "Latest jacket flipkart",
+                      "Latest monbile anything",
+                      "Latest laptop other",
+                    ].map((text, index) => (
+                      <div
+                        key={index}
+                        className="frame-link"
+                        style={frameStyle}
+                      >
+                        <span className="frame-icon"></span>
+                        <span>{text}</span>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
 
@@ -294,7 +397,7 @@ const Appearence = () => {
                             }`}
                             onClick={() => handleButtonClick(button)}
                           >
-                            {button.includes("colopatlet") ? "x" : ""}
+                            {button.includes("colopatlet") ? "" : ""}
                           </button>
                         ))}
                       </div>
@@ -396,23 +499,13 @@ const Appearence = () => {
             <div className="Themes-cont">
               <label className="nameoflay">Themes</label>
               <div className="Themesdisplay">
-                {[
-                  "Air Snow",
-                  "Air Grey",
-                  "Air Smoke",
-                  "Air Black",
-                  "Mineral Blue",
-                  "Mineral Green",
-                  "Mineral Orange",
-                ].map((themeName, index) => (
-                  <div className="buttonoftheme" key={index}>
+                {Object.entries(themeMapping).map(([themeName, themeClass]) => (
+                  <div className="buttonoftheme" key={themeClass}>
                     <button
-                      className={`Themecont${index + 1} ${
-                        selectedTheme === `Themecont${index + 1}`
-                          ? "selected-theme"
-                          : ""
+                      className={`${themeClass} ${
+                        selectedTheme === themeClass ? "selected-theme" : ""
                       }`}
-                      onClick={() => handleThemeChange(`Themecont${index + 1}`)}
+                      onClick={() => handleThemeChange(themeClass)}
                     >
                       <span>&#9776;</span>
                     </button>
@@ -422,7 +515,9 @@ const Appearence = () => {
               </div>
             </div>
             <div className="savestylecont">
-              <button className="stylesave">save</button>
+              <button className="stylesave" onClick={handleSaveAppearance}>
+                save
+              </button>
             </div>
           </div>
         </div>

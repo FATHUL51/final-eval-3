@@ -1,12 +1,14 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const User = require("../models/user.model"); // Import User model
+
 dotenv.config();
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   let token;
 
   // Check if token exists in cookies or headers
-  if (req.cookies.token) {
+  if (req.cookies && req.cookies.token) {
     token = req.cookies.token;
   } else if (
     req.headers.authorization &&
@@ -17,17 +19,24 @@ const authMiddleware = (req, res, next) => {
 
   // If no token found, return error
   if (!token) {
-    return res
-      .status(401)
-      .json({ message: "This action is not allowed, token missing" });
+    return res.status(401).json({ message: "Unauthorized: Token missing" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Attach decoded user data to request
+
+    // Fetch full user from database and attach to req.user
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized: User not found" });
+    }
+
+    req.user = user; // ✅ Attach full user object to req.user
     next();
   } catch (err) {
-    res.status(401).json({ message: "Invalid or expired token" });
+    return res
+      .status(401)
+      .json({ message: "Unauthorized: Invalid or expired token" });
   }
 };
 

@@ -25,7 +25,7 @@ function Links() {
       <div className="main-content">
         <Navbar />
         <div className="content-wrapper">
-          <div className="frame-section" style={{ paddingTop: "2rem" }}>
+          <div className="frame-section">
             <div className="frame">
               <div className="frame-username">
                 <img
