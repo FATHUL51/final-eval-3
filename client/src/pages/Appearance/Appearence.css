@@ -11,6 +11,7 @@
     border-radius: 3rem;
     position: relative;
 }
+
 .nameoflay{
     background-color: none;
     margin-left: 20px;
@@ -485,4 +486,9 @@ border-radius: 0.5rem;
 .selected-theme {
     border: 1px solid green;
   }
-  
+  .active-layout{
+      .layoutimg{
+        background-color: #E0E2D9;
+    border: none;
+    }
+  }

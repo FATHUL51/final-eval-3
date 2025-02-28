@@ -25,7 +25,7 @@
 .frame{
     margin: 0 auto;
     display:flex;
-    height: 80%;
+    height: 90%;
     width: 80%;
     flex-direction: column;
     align-items: center;
@@ -333,7 +333,7 @@
     grid-template-columns: 1fr 1fr;
     height: 7rem;
     background-color: #f3f4f6;
-    width: 60%;
+    width: 70%;
     justify-content: center;
     align-items: center;
     border-radius: 3rem;
@@ -355,7 +355,7 @@
     border: none;
     height: 2rem;
     display: flex;
-    width: 90%;
+    margin-right: 10px;
     justify-content: start;
 }
 
@@ -449,3 +449,56 @@
     margin-top: 2rem;
     align-self: flex-end;
 } 
+.modal-overlay{
+    position: absolute;
+    background-color:white ;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+}
+.modal-tabs{
+    display: flex;
+    height: 3rem;
+    width: 16rem;
+    background-color: #BFBFBF;
+    border-radius: 2rem;
+}
+.add-shop1,.add-link1{
+    width: 8rem;
+    height: 3rem;
+    border: none;
+    border-radius: 2rem;
+    background-color: #BFBFBF;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+.active-tab{
+    width: 8rem;
+    height: 3rem;
+    border: none;
+    border-radius: 2rem;
+    background-color: #29A263;
+    color:white;
+    font-weight: 500;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+.modal-container1{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+    border-radius: 1rem;
+    margin: 1rem 0;
+    padding: 1rem 1rem;
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.5); 
+
+}
+.input-field1{
+    margin: 0;
+    padding: 0.8rem 2rem;
+    border-radius: 2rem;
+    border: none;
+    background-color: #e1e1e1;
+}

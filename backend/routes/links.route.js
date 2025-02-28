@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/auth.middleware");
+const authAnalytics = require("../middleware/analytics.middleware");
 const Link = require("../models/link.model");
 const User = require("../models/user.model");
 const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 
 dotenv.config();
 router.use(express.json());
@@ -12,18 +14,8 @@ router.post("/linkcreate", authMiddleware, async (req, res) => {
   const { bio, link, shop, banner } = req.body;
 
   try {
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    if (!user.username) {
-      return res
-        .status(400)
-        .json({ message: "Username is missing for this user" });
-    }
-
-    let existingLink = await Link.findOne({ user: req.user.id });
+    const user = req.user.id;
+    let existingLink = await Link.findOne({ user });
 
     if (existingLink) {
       if (bio) existingLink.bio = bio;
@@ -34,6 +26,7 @@ router.post("/linkcreate", authMiddleware, async (req, res) => {
           linktitle: link.linktitle,
           linkurl: link.linkurl,
           application: link.application,
+          analytics: [],
         });
       }
 
@@ -42,6 +35,7 @@ router.post("/linkcreate", authMiddleware, async (req, res) => {
           shopname: shop.shopname,
           shopurl: shop.shopurl,
           application: shop.application,
+          analytics: [],
         });
       }
 
@@ -51,7 +45,7 @@ router.post("/linkcreate", authMiddleware, async (req, res) => {
         .json({ message: "Link updated successfully", data: existingLink });
     } else {
       const newLink = new Link({
-        username: user.username,
+        username: req.user.username,
         bio,
         link: link
           ? [
@@ -59,6 +53,7 @@ router.post("/linkcreate", authMiddleware, async (req, res) => {
                 linktitle: link.linktitle,
                 linkurl: link.linkurl,
                 application: link.application,
+                analytics: [],
               },
             ]
           : [],
@@ -68,11 +63,12 @@ router.post("/linkcreate", authMiddleware, async (req, res) => {
                 shopname: shop.shopname,
                 shopurl: shop.shopurl,
                 application: shop.application,
+                analytics: [],
               },
             ]
           : [],
         banner,
-        user: req.user.id,
+        user,
       });
 
       await newLink.save();
@@ -86,9 +82,10 @@ router.post("/linkcreate", authMiddleware, async (req, res) => {
   }
 });
 
+// Get User's Link Details
 router.get("/linkdetails", authMiddleware, async (req, res) => {
   try {
-    const link = await Link.find({ user: req.user.id });
+    const link = await Link.findOne({ user: req.user.id });
 
     if (!link) {
       return res.status(404).json({ message: "Link details not found" });
@@ -101,44 +98,174 @@ router.get("/linkdetails", authMiddleware, async (req, res) => {
   }
 });
 
-router.patch("/linkupdate", authMiddleware, async (req, res) => {
+// Update Link
+router.put("/linkupdate/:id", authMiddleware, async (req, res) => {
   const { bio, link, shop, banner } = req.body;
 
   try {
-    let existingLink = await Link.findOne({ user: req.user.id });
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid ObjectId format" });
+    }
+    const linkId = new mongoose.Types.ObjectId(req.params.id);
+
+    let existingLink = await Link.findOne({
+      $or: [{ "link._id": linkId }, { "shop._id": linkId }],
+      user: req.user.id,
+    });
 
     if (!existingLink) {
-      return res.status(404).json({ message: "Link details not found" });
+      return res
+        .status(404)
+        .json({ message: "Link or Shop details not found in database" });
     }
 
-    existingLink.bio = bio || existingLink.bio;
-    existingLink.banner = banner || existingLink.banner;
-
+    // Update the specific `link` inside `link[]`
     if (link) {
-      existingLink.link = {
-        linktitle: link.linktitle || existingLink.link.linktitle,
-        linkurl: link.linkurl || existingLink.link.linkurl,
-        application: link.application || existingLink.link.application,
-      };
+      existingLink.link = existingLink.link.map((l) =>
+        l._id.toString() === req.params.id ? { ...l, ...link } : l
+      );
     }
 
+    // Update the specific `shop` inside `shop[]`
     if (shop) {
-      existingLink.shop = {
-        shopname: shop.shopname || existingLink.shop.shopname,
-        shopurl: shop.shopurl || existingLink.shop.shopurl,
-        application: shop.application || existingLink.shop.application,
-      };
+      existingLink.shop = existingLink.shop.map((s) =>
+        s._id.toString() === req.params.id ? { ...s, ...shop } : s
+      );
     }
 
     await existingLink.save();
 
     res.status(200).json({
-      message: "Link details updated successfully",
+      message: "Link or Shop details updated successfully",
       data: existingLink,
     });
   } catch (error) {
-    console.error("Error updating link details:", error);
+    console.error("Error updating link/shop details:", error);
     res.status(400).json({ message: error.message || "An error occurred" });
   }
 });
+
+// Update Banner and Bio
+router.put("/updateBannerBio", authMiddleware, async (req, res) => {
+  const { bio, banner } = req.body;
+
+  try {
+    const user = req.user.id;
+    let existingLink = await Link.findOne({ user });
+
+    if (!existingLink) {
+      return res.status(404).json({ message: "Link details not found" });
+    }
+
+    if (bio) existingLink.bio = bio;
+    if (banner) existingLink.banner = banner;
+
+    await existingLink.save();
+
+    res.status(200).json({
+      message: "Banner and Bio updated successfully",
+      data: existingLink,
+    });
+  } catch (error) {
+    console.error("Error updating banner and bio:", error);
+    res.status(400).json({ message: error.message || "An error occurred" });
+  }
+});
+
+router.get("/redirect/:linkId", authAnalytics, async (req, res) => {
+  try {
+    // Ensure linkId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(req.params.linkId)) {
+      return res.status(400).json({ message: "Invalid link ID" });
+    }
+
+    const link = await Link.findOne({ "link._id": req.params.linkId });
+
+    if (!link) {
+      return res.status(404).json({ message: "Link not found" });
+    }
+
+    const targetLink = link.link.find(
+      (l) => l._id.toString() === req.params.linkId
+    );
+    if (!targetLink) {
+      return res.status(404).json({ message: "Target link not found" });
+    }
+
+    res.redirect(targetLink.linkurl);
+  } catch (error) {
+    console.error("Error fetching link:", error);
+    res.status(500).json({ message: "An error occurred" });
+  }
+});
+
+// Get Analytics Data for a User
+router.get("/analytics/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const links = await Link.find({ user: userId });
+
+    if (!links.length) {
+      return res.status(404).json({ message: "No links found for this user" });
+    }
+
+    let deviceStats = {};
+    let monthlyStats = {};
+    let linkViews = {};
+
+    links.forEach((link) => {
+      link.link.forEach((l) => {
+        linkViews[l.linktitle] = l.analytics.length;
+
+        l.analytics.forEach((entry) => {
+          deviceStats[entry.deviceType] =
+            (deviceStats[entry.deviceType] || 0) + 1;
+
+          const month = new Date(entry.timestamp).toISOString().slice(0, 7);
+          monthlyStats[month] = (monthlyStats[month] || 0) + 1;
+        });
+      });
+    });
+
+    res.status(200).json({
+      viewsByDevice: deviceStats,
+      viewsByMonth: monthlyStats,
+      viewsOnLinks: linkViews,
+    });
+  } catch (error) {
+    console.error("Error fetching analytics:", error);
+    res.status(500).json({ message: "An error occurred" });
+  }
+});
+
+// Delete Link or Shop
+router.delete("/delete/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = req.user.id;
+    let existingLink = await Link.findOne({ user });
+
+    if (!existingLink) {
+      return res.status(404).json({ message: "Link details not found" });
+    }
+
+    existingLink.link = existingLink.link.filter(
+      (l) => l._id.toString() !== id
+    );
+    existingLink.shop = existingLink.shop.filter(
+      (s) => s._id.toString() !== id
+    );
+
+    await existingLink.save();
+    res.status(200).json({
+      message: "Link or Shop deleted successfully",
+      data: existingLink,
+    });
+  } catch (error) {
+    console.error("Error deleting link or shop:", error);
+    res.status(400).json({ message: error.message || "An error occurred" });
+  }
+});
+
 module.exports = router;

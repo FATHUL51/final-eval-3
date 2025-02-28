@@ -10,6 +10,7 @@ import Links from "./pages/Layout/Links";
 import Settings from "./pages/Settings/Settings";
 import Analytixs from "./pages/Analytixs/Analytixs";
 import Appearence from "./pages/Appearance/Appearence";
+import Frame from "./components/frame/Frame";
 
 const App = () => {
   return (
@@ -64,6 +65,7 @@ const App = () => {
             </UserProtectedWrapper>
           }
         />
+        <Route path="/:id" element={<Frame />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />

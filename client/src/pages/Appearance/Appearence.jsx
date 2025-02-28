@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Navbar from "../../components/navbar/Naavbar";
 import lastlogo from "../../assets/components/Auto Layout Horizontal.png";
@@ -22,6 +22,10 @@ const Appearence = () => {
   const [frameBgColor, setFrameBgColor] = useState("#ffffff");
   const [selectedLayout, setSelectedLayout] = useState("stack");
   const [selectedFont, setSelectedFont] = useState("DM Sans");
+  const [userData, setUserData] = useState("");
+  const [banner, setBanner] = useState("");
+  const [links, setLinks] = useState([]);
+  const [shops, setShops] = useState([]);
 
   // Button groups
   const buttonGroups = [
@@ -51,22 +55,22 @@ const Appearence = () => {
     },
   ];
   const themeMapping = {
-    "Air Snow": "Themecont1",
-    "Air Gray": "Themecont2",
-    "Air Smoke": "Themecont3",
-    "Air Black": "Themecont4",
-    "Mineral Blue": "Themecont5",
-    "Mineral Green": "Themecont6",
-    "Mineral Orange": "Themecont7",
+    white: "Themecont1",
+    "#E0E2D9": "Themecont2",
+    "#272d2f": "Themecont3",
+    black: "Themecont4",
+    "#e4f5fe": "Themecont5",
+    "#e5f9ef": "Themecont6",
+    "#fcefe3": "Themecont7",
   };
 
   const handleButtonClick = (button) => {
     setSelected(button);
     let style = {
       ...styleArray[button],
-      backgroundColor: handleButtonColorChange,
-      color: handleButtonTextColorChange,
-      fontFamily: handleFontChange,
+      backgroundColor: buttonColor,
+      color: buttonTextColor,
+      fontFamily: selectedFont,
     };
     if (
       button.includes("colopatlet1") ||
@@ -74,6 +78,7 @@ const Appearence = () => {
       button.includes("colopatlet3")
     ) {
       style.border = "2px solid " + buttonTextColor;
+      style.backgroundColor = buttonColor;
       style.borderRadius = button.includes("colopatlet3")
         ? "2rem"
         : button.includes("colopatlet2")
@@ -86,6 +91,7 @@ const Appearence = () => {
       button.includes("colopatlet6")
     ) {
       style.border = "2px solid " + buttonTextColor;
+      style.backgroundColor = "transparent";
       style.borderRadius = button.includes("colopatlet6")
         ? "2rem"
         : button.includes("colopatlet5")
@@ -100,9 +106,9 @@ const Appearence = () => {
     ) {
       style.boxShadow = "6px 6px 0px rgba(0, 0, 0, 1)";
       style.borderRadius = button.includes("colopatlet9")
-        ? "1rem"
+        ? "2rem"
         : button.includes("colopatlet8")
-        ? "0.5rem"
+        ? "1rem"
         : "0rem";
     }
     if (
@@ -156,29 +162,16 @@ const Appearence = () => {
     setFrameStyle((prevStyle) => ({ ...prevStyle, color: e.target.value }));
   };
 
-  const handleButtonTextChange = (e) => {
-    const newText = e.target.value;
-    setTempButtonColor(newText);
-    if (/^#([0-9A-F]{6})$/i.test(newText)) {
-      setButtonColor(newText);
-    }
-  };
-
-  const handleButtonFontTextChange = (e) => {
-    const newText = e.target.value;
-    setTempButtonTextColor(newText);
-    if (/^#([0-9A-F]{6})$/i.test(newText)) {
-      setButtonTextColor(newText);
-    }
-  };
-
   useEffect(() => {
-    setFrameStyle((prevStyle) => ({
-      ...prevStyle,
-      backgroundColor: buttonColor,
-      color: buttonTextColor,
-    }));
-  }, [buttonColor, buttonTextColor]);
+    if (selected && styleArray[selected]) {
+      setFrameStyle({
+        ...styleArray[selected],
+        backgroundColor: buttonColor,
+        color: buttonTextColor,
+        fontFamily: selectedFont,
+      });
+    }
+  }, [selected, buttonColor, buttonTextColor, selectedFont]);
 
   const handleFontChange = (e) => {
     setFrameStyle((prevStyle) => ({
@@ -212,20 +205,97 @@ const Appearence = () => {
 
         setSelectedLayout(layout);
         setSelected(button);
-        setButtonTextColor(button_text);
+        setButtonColor(button_text);
+        setButtonTextColor(fontcolor);
         setSelectedFont(font);
         setSelectedTheme(themeMapping[themes] || "Themecont1");
 
-        // Apply styles to frame
-        const newFrameStyle = {
+        // Ensure styles are applied properly
+        let newFrameStyle = {
           ...(styleArray[button] || {}),
-          backgroundColor: buttonColor,
-          color: button_text,
+          backgroundColor: button_text,
+          color: fontcolor,
           fontFamily: font,
         };
 
+        // Apply border and shadow based on button style
+        if (
+          button.includes("colopatlet1") ||
+          button.includes("colopatlet2") ||
+          button.includes("colopatlet3")
+        ) {
+          newFrameStyle.border = "2px solid " + fontcolor;
+          newFrameStyle.borderRadius = button.includes("colopatlet3")
+            ? "2rem"
+            : button.includes("colopatlet2")
+            ? "1rem"
+            : "0rem";
+        }
+        if (
+          button.includes("colopatlet4") ||
+          button.includes("colopatlet5") ||
+          button.includes("colopatlet6")
+        ) {
+          newFrameStyle.border = "2px solid " + buttonTextColor;
+          newFrameStyle.backgroundColor = "transparent";
+          newFrameStyle.borderRadius = button.includes("colopatlet6")
+            ? "2rem"
+            : button.includes("colopatlet5")
+            ? "1rem"
+            : "0rem";
+        }
+
+        if (
+          button.includes("colopatlet7") ||
+          button.includes("colopatlet8") ||
+          button.includes("colopatlet9")
+        ) {
+          newFrameStyle.boxShadow = "6px 6px 0px rgba(0, 0, 0, 1)";
+          newFrameStyle.borderRadius = button.includes("colopatlet9")
+            ? "2rem"
+            : button.includes("colopatlet8")
+            ? "1rem"
+            : "0rem";
+        }
+        if (
+          button.includes("colopatlet10") ||
+          button.includes("colopatlet11") ||
+          button.includes("colopatlet12")
+        ) {
+          newFrameStyle.boxShadow = "6px 6px 0px rgba(0, 0, 0, 0.3)";
+          newFrameStyle.borderRadius =
+            button.includes("colopatlet12") || button.includes("colopatlet12")
+              ? "2rem"
+              : button.includes("colopatlet11")
+              ? "1rem"
+              : "0rem";
+        }
+        if (
+          button.includes("colopatlet13") ||
+          button.includes("colopatlet14")
+        ) {
+          newFrameStyle.clipPath =
+            "polygon(0% 10%, 5% 0%, 10% 8%, 15% 2%, 20% 6%, 25% 0%, 30% 6%, 35% 2%, 40% 10%, 45% 4%, 50% 6%, 55% 2%, 60% 10%, 65% 0%, 70% 8%, 75% 2%, 80% 6%, 85% 0%, 90% 8%, 95% 2%, 100% 10%, 100% 90%, 95% 100%, 90% 92%, 85% 100%, 80% 94%, 75% 100%, 70% 92%, 65% 100%, 60% 94%, 55% 100%, 50% 92%, 45% 100%, 40% 94%, 35% 100%, 30% 92%, 25% 100%, 20% 94%, 15% 100%, 10% 92%, 5% 100%, 0% 90%)";
+        }
+
+        if (button.includes("colopatlet15")) {
+          newFrameStyle.border = "1px solid black";
+        }
+
+        if (button.includes("colopatlet16")) {
+          newFrameStyle.borderRadius = "2rem";
+        }
+        if (button.includes("colopatlet17")) {
+          newFrameStyle.position = "relative";
+          newFrameStyle.border = "2px solid black";
+        }
+
+        if (button.includes("colopatlet18")) {
+          newFrameStyle.borderRadius = "2rem 0px 0px 2rem";
+        }
+
         setFrameStyle(newFrameStyle);
-        setFrameBgColor(buttonColor);
+        setFrameBgColor(themes);
       }
     } catch (error) {
       console.error("Error fetching appearance settings:", error);
@@ -242,9 +312,9 @@ const Appearence = () => {
     const appearanceData = {
       layout: selectedLayout,
       button: selected,
-      button_text: buttonTextColor,
+      button_text: buttonColor, // FIXED: Sending buttonColor instead of buttonTextColor
       font: selectedFont,
-      fontcolor: buttonTextColor,
+      fontcolor: buttonTextColor, // This correctly sends font color
       themes: reverseThemeMapping[selectedTheme] || "Air Snow",
     };
 
@@ -263,8 +333,66 @@ const Appearence = () => {
     }
   };
 
+  const handleLayoutChange = (layout) => {
+    setSelectedLayout(layout);
+  };
+
   useEffect(() => {
+    const fetchuserDetails = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Get token from local storage
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/user/profile`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setUserData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    const fetchLinks = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/link/linkdetails`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (response.status === 200 && response.data.data) {
+          const fetchedData = response.data.data;
+          setBanner(fetchedData.banner);
+        }
+      } catch (error) {
+        console.error("Error fetching links:", error);
+      }
+    };
+
     fetchAppearanceSettings();
+    fetchuserDetails();
+    fetchLinks();
+  }, []);
+  const fetchLinks = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/link/linkdetails`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200 && response.data.data) {
+        const fetchedData = response.data.data;
+        setLinks(fetchedData.link || []);
+        setShops(fetchedData.shop || []);
+      }
+    } catch (error) {
+      console.error("Error fetching links:", error);
+    }
+  };
+  useEffect(() => {
+    fetchLinks();
   }, []);
 
   return (
@@ -273,74 +401,151 @@ const Appearence = () => {
       <div className="main-content">
         <Navbar />
         <div className="content-wrapper">
-          <div className="frame-section">
+          <div
+            className="frame-section"
+            style={{ width: selectedLayout === "Carousel" ? "440px" : "auto" }}
+          >
             <div className="frame" style={{ backgroundColor: frameBgColor }}>
-              <div className="frame-username">
+              <div
+                className="frame-username"
+                style={{ backgroundColor: banner }}
+              >
                 <img
                   src="https://www.w3schools.com/howto/img_avatar.png"
-                  alt=""
+                  alt="Avatar"
                   className="frame-img"
                 />
-                <h2>@islam_51</h2>
+                <h2 style={{ color: buttonTextColor }}>@{userData.username}</h2>
               </div>
+
               <div className="frame-buttons">
-                <button
-                  className={`tab-btn ${
-                    selectedTab === "Link" ? "active" : ""
-                  }`}
-                  onClick={() => setSelectedTab("Link")}
-                >
-                  Link
-                </button>
-                <button
-                  className={`tab-btn ${
-                    selectedTab === "Shop" ? "active" : ""
-                  }`}
-                  onClick={() => setSelectedTab("Shop")}
-                >
-                  Shop
-                </button>
+                {["Link", "Shop"].map((tab) => (
+                  <button
+                    key={tab}
+                    className={`tab-btn ${selectedTab === tab ? "active" : ""}`}
+                    onClick={() => setSelectedTab(tab)}
+                  >
+                    {tab}
+                  </button>
+                ))}
               </div>
+
               <div className="content1">
                 {selectedTab === "Link" ? (
-                  <div className="frame-links">
-                    {[
-                      "Latest YouTube Video",
-                      "Latest Instagram Reel",
-                      "Latest YouTube Video",
-                      "Latest Instagram Reel",
-                      "Latest YouTube Video",
-                      "Latest Instagram Reel",
-                    ].map((text, index) => (
-                      <div
-                        key={index}
-                        className="frame-link"
-                        style={frameStyle}
-                      >
-                        <span className="frame-icon"></span>
-                        <span>{text}</span>
-                      </div>
-                    ))}
+                  <div
+                    className="frame-links"
+                    style={{
+                      display: selectedLayout === "grid" ? "grid" : "flex",
+                      gridTemplateColumns:
+                        selectedLayout === "grid" ? "1fr 1fr" : "unset",
+                      flexDirection:
+                        selectedLayout === "Carousel" ? "row" : "column",
+                      height:
+                        selectedLayout === "grid"
+                          ? "150%"
+                          : selectedLayout === "Carousel"
+                          ? "100%"
+                          : "",
+                      width: selectedLayout === "Carousel" ? "50rem" : "",
+                    }}
+                  >
+                    {links.length > 0 ? (
+                      links.map((link) => (
+                        <div
+                          key={link._id}
+                          className="frame-link"
+                          style={{
+                            ...frameStyle,
+                            ...(["grid", "Carousel"].includes(
+                              selectedLayout
+                            ) && {
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              height:
+                                selectedLayout === "grid"
+                                  ? "8rem"
+                                  : selectedLayout === "Carousel"
+                                  ? "100%"
+                                  : "",
+                              width: "100%",
+                              flexDirection: "column",
+                            }),
+                          }}
+                        >
+                          <span className="frame-icon"></span>
+                          <span
+                            style={{
+                              textAlign: ["grid", "Carousel"].includes(
+                                selectedLayout
+                              )
+                                ? "center"
+                                : "left",
+                            }}
+                          >
+                            {link.linktitle}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No links available</p>
+                    )}
                   </div>
                 ) : (
-                  <div className="frame-links">
-                    {[
-                      "Latest Tshirt shopify",
-                      "Latest pant olx",
-                      "Latest shirt shopify",
-                      "Latest jacket flipkart",
-                      "Latest monbile anything",
-                      "Latest laptop other",
-                    ].map((text, index) => (
-                      <div
-                        key={index}
-                        className="frame-link"
-                        style={frameStyle}
-                      >
-                        <span className="frame-icon"></span>
-                        <span>{text}</span>
-                      </div>
-                    ))}
+                  <div
+                    className="frame-links"
+                    style={{
+                      display: selectedLayout === "grid" ? "grid" : "flex",
+                      gridTemplateColumns:
+                        selectedLayout === "grid" ? "1fr 1fr" : "unset",
+                      flexDirection:
+                        selectedLayout === "Carousel" ? "row" : "column",
+                      height: selectedLayout === "Carousel" ? "100%" : "",
+                      width: selectedLayout === "Carousel" ? "35rem" : "",
+                    }}
+                  >
+                    {shops.length > 0 ? (
+                      shops.map((shop) => (
+                        <div
+                          key={shop._id}
+                          className="frame-link"
+                          onClick={() => window.open(shop.shopurl, "_blank")}
+                          style={{
+                            ...frameStyle,
+                            ...(["grid", "Carousel"].includes(
+                              selectedLayout
+                            ) && {
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              height:
+                                selectedLayout === "grid"
+                                  ? "8rem"
+                                  : selectedLayout === "Carousel"
+                                  ? "100%"
+                                  : "",
+                              width: "100%",
+                              flexDirection: "column",
+                            }),
+                          }}
+                        >
+                          <span className="frame-icon"></span>
+                          <span
+                            style={{
+                              textAlign: ["grid", "Carousel"].includes(
+                                selectedLayout
+                              )
+                                ? "center"
+                                : "left",
+                            }}
+                          >
+                            {shop.shopname}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No shops available</p>
+                    )}
                   </div>
                 )}
               </div>
@@ -348,23 +553,39 @@ const Appearence = () => {
               <button className="get-connected">Get Connected</button>
 
               <div className="last-logo">
-                <img src={lastlogo} alt="" />
+                <img src={lastlogo} alt="Logo" />
               </div>
             </div>
           </div>
+
           <div className="profile-container">
             <div className="layout">
               <label className="nameoflay">Layout</label>
               <div className="layout-buttons">
-                <button className="layoutbtn">
+                <button
+                  className={`layoutbtn ${
+                    selectedLayout === "stack" ? "active-layout" : ""
+                  }`}
+                  onClick={() => handleLayoutChange("stack")}
+                >
                   <img className="layoutimg" src={stack} />
                   Stack
                 </button>
-                <button className="layoutbtn">
+                <button
+                  className={`layoutbtn ${
+                    selectedLayout === "grid" ? "active-layout" : ""
+                  }`}
+                  onClick={() => handleLayoutChange("grid")}
+                >
                   <img className="layoutimg" src={grid} />
                   Grid
                 </button>
-                <button className="layoutbtn">
+                <button
+                  className={`layoutbtn ${
+                    selectedLayout === "Carousel" ? "active-layout" : ""
+                  }`}
+                  onClick={() => handleLayoutChange("Carousel")}
+                >
                   <img className="layoutimg" src={Carousel} />
                   Carousel
                 </button>
@@ -418,8 +639,8 @@ const Appearence = () => {
                       <input
                         type="text"
                         className="buinp"
-                        value={tempButtonColor}
-                        onChange={handleButtonTextChange}
+                        value={buttonColor}
+                        onChange={handleButtonColorChange}
                         placeholder="#000000"
                       />
                     </div>
@@ -439,8 +660,8 @@ const Appearence = () => {
                       <input
                         type="text"
                         className="buinp"
-                        value={tempButtonTextColor}
-                        onChange={handleButtonFontTextChange}
+                        value={buttonTextColor}
+                        onChange={handleButtonTextColorChange}
                         placeholder="#FFFFFF"
                       />
                     </div>
@@ -477,8 +698,8 @@ const Appearence = () => {
                     <input
                       className="inputofcolor"
                       type="color"
-                      value={tempButtonTextColor}
-                      onChange={handleButtonFontTextChange}
+                      value={buttonTextColor}
+                      onChange={handleButtonTextColorChange}
                     />
                     <div className="bucont">
                       <p className="butext">Font color</p>
@@ -486,8 +707,8 @@ const Appearence = () => {
                       <input
                         type="text"
                         className="buinp"
-                        value={tempButtonTextColor}
-                        onChange={handleButtonFontTextChange}
+                        value={buttonTextColor}
+                        onChange={handleButtonTextColorChange}
                         placeholder="#000000"
                       />
                     </div>

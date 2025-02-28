@@ -1,49 +1,69 @@
 const mongoose = require("mongoose");
-const Linkschema = new mongoose.Schema({
-  image: {},
-  username: {
+
+const AnalyticsSchema = new mongoose.Schema({
+  userIp: {
     type: String,
     required: true,
   },
-  bio: {
+  userCookie: {
     type: String,
   },
+  deviceType: {
+    type: String,
+    enum: ["Mobile", "Desktop", "Tablet"],
+    required: true,
+  },
+  location: {
+    country: { type: String },
+    city: { type: String },
+  },
+  referrer: {
+    type: String,
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+const ShopSchema = new mongoose.Schema({
+  shopname: { type: String, required: true },
+  shopurl: { type: String, required: true },
+  application: {
+    type: String,
+    enum: ["Shopify", "WooCommerce", "BigCommerce", "Magento"],
+    required: true,
+  },
+  analytics: [AnalyticsSchema],
+});
+
+const LinkSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  bio: { type: String },
+
   link: [
     {
-      linktitle: {
-        type: String,
-      },
-      linkurl: {
-        type: String,
-      },
+      linktitle: { type: String, required: true },
+      linkurl: { type: String, required: true },
       application: {
         type: String,
         enum: ["Facebook", "Instagram", "Twitter", "YouTube"],
+        required: true,
       },
+      analytics: [AnalyticsSchema],
     },
   ],
-  shop: [
-    {
-      shopname: {
-        type: String,
-      },
-      shopurl: {
-        type: String,
-      },
-      application: {
-        type: String,
-        enum: ["Shopify", "WooCommerce", "BigCommerce", "Magento"],
-      },
-    },
-  ],
-  banner: {
-    type: String,
-  },
+
+  shop: [ShopSchema],
+
+  banner: { type: String },
+
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
 });
-const Link = mongoose.model("Link", Linkschema);
+
+const Link = mongoose.model("Link", LinkSchema);
 module.exports = Link;

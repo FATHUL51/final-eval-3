@@ -124,7 +124,6 @@ const stylesArray = [
     styles: {
       width: "9rem",
       height: "2rem",
-      backgroundColor: "black",
       color: "white",
       borderRadius: "20px",
       border: "none",
@@ -143,7 +142,6 @@ const stylesArray = [
     styles: {
       width: "9rem",
       height: "2rem",
-      backgroundColor: "black",
       color: "white",
       borderRadius: "20px 0px 0px 20px",
       border: "none",
