@@ -270,9 +270,12 @@ function Links() {
     console.log("Sending Update Request for Shop ID:", editingItem);
 
     try {
-      const url = `${
-        import.meta.env.VITE_BACKEND_URL
-      }/api/link/linkupdate/${editingItem}`;
+      const url = editingItem
+        ? `${
+            import.meta.env.VITE_BACKEND_URL
+          }/api/link/linkupdate/${editingItem}`
+        : `${import.meta.env.VITE_BACKEND_URL}/api/link/linkcreate`;
+
       const method = editingItem ? "put" : "post";
 
       const res = await axios[method](
