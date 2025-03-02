@@ -154,7 +154,21 @@ router.put("/updateBannerBio", authMiddleware, async (req, res) => {
     let existingLink = await Link.findOne({ user });
 
     if (!existingLink) {
-      return res.status(404).json({ message: "Link details not found" });
+      // Create a new Link document if none exists
+      const newLink = new Link({
+        user,
+        bio: bio || "",
+        banner: banner || "",
+        link: [],
+        shop: [],
+      });
+
+      await newLink.save();
+
+      return res.status(201).json({
+        message: "Banner and Bio created successfully",
+        data: newLink,
+      });
     }
 
     if (bio) existingLink.bio = bio;
