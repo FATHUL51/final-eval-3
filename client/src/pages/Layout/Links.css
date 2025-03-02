@@ -331,7 +331,7 @@
 .add-link{
     display: grid;
     grid-template-columns: 1fr 1fr;
-    height: 7rem;
+    height: 4rem;
     background-color: #f3f4f6;
     width: 70%;
     justify-content: center;

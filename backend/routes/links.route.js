@@ -172,72 +172,6 @@ router.put("/updateBannerBio", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/redirect/:linkId", authAnalytics, async (req, res) => {
-  try {
-    // Ensure linkId is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(req.params.linkId)) {
-      return res.status(400).json({ message: "Invalid link ID" });
-    }
-
-    const link = await Link.findOne({ "link._id": req.params.linkId });
-
-    if (!link) {
-      return res.status(404).json({ message: "Link not found" });
-    }
-
-    const targetLink = link.link.find(
-      (l) => l._id.toString() === req.params.linkId
-    );
-    if (!targetLink) {
-      return res.status(404).json({ message: "Target link not found" });
-    }
-
-    res.redirect(targetLink.linkurl);
-  } catch (error) {
-    console.error("Error fetching link:", error);
-    res.status(500).json({ message: "An error occurred" });
-  }
-});
-
-// Get Analytics Data for a User
-router.get("/analytics/:userId", async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const links = await Link.find({ user: userId });
-
-    if (!links.length) {
-      return res.status(404).json({ message: "No links found for this user" });
-    }
-
-    let deviceStats = {};
-    let monthlyStats = {};
-    let linkViews = {};
-
-    links.forEach((link) => {
-      link.link.forEach((l) => {
-        linkViews[l.linktitle] = l.analytics.length;
-
-        l.analytics.forEach((entry) => {
-          deviceStats[entry.deviceType] =
-            (deviceStats[entry.deviceType] || 0) + 1;
-
-          const month = new Date(entry.timestamp).toISOString().slice(0, 7);
-          monthlyStats[month] = (monthlyStats[month] || 0) + 1;
-        });
-      });
-    });
-
-    res.status(200).json({
-      viewsByDevice: deviceStats,
-      viewsByMonth: monthlyStats,
-      viewsOnLinks: linkViews,
-    });
-  } catch (error) {
-    console.error("Error fetching analytics:", error);
-    res.status(500).json({ message: "An error occurred" });
-  }
-});
-
 // Delete Link or Shop
 router.delete("/delete/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
@@ -268,4 +202,19 @@ router.delete("/delete/:id", authMiddleware, async (req, res) => {
   }
 });
 
+router.get("/linkdetails/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const links = await Link.find({ user: userId });
+
+    if (!links || links.length === 0) {
+      return res.status(404).json({ message: "Link details not found" });
+    }
+
+    res.status(200).json({ message: "Link details fetched", data: links });
+  } catch (error) {
+    console.error("Error fetching link details:", error);
+    res.status(500).json({ message: "An error occurred" });
+  }
+});
 module.exports = router;

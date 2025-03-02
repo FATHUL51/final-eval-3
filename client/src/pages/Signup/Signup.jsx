@@ -221,7 +221,7 @@ const Signup = () => {
       <div className="maincontainers">
         <Logo />
         <h1 className="sparkss">Sign up to your Spark</h1>
-        <div className="divconts">
+        <div className="divconts" style={{ marginBottom: "5rem" }}>
           <h5 className="joinuss">
             Create an account{" "}
             <Link
@@ -346,20 +346,20 @@ const Signup = () => {
               Register
             </button>
           </form>
-          <div className="lastx">
-            <p>
-              This site is protected by reCAPTCHA and the{" "}
-              <span style={{ textDecoration: "underline" }}>
-                Google Privacy Policy
-              </span>{" "}
-              and{" "}
-              <span style={{ textDecoration: "underline" }}>
-                {" "}
-                Terms of Service
-              </span>{" "}
-              apply.
-            </p>
-          </div>
+        </div>
+        <div>
+          <p className="lastx">
+            This site is protected by reCAPTCHA and the{" "}
+            <span style={{ textDecoration: "underline" }}>
+              Google Privacy Policy
+            </span>{" "}
+            and{" "}
+            <span style={{ textDecoration: "underline" }}>
+              {" "}
+              Terms of Service
+            </span>{" "}
+            apply.
+          </p>
         </div>
       </div>
       <img src={images} className="image" />

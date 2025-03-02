@@ -65,7 +65,7 @@ const App = () => {
             </UserProtectedWrapper>
           }
         />
-        <Route path="/:id" element={<Frame />} />
+        <Route path="/frame/:userId" element={<Frame />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />

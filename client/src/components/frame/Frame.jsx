@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import styleArray from "../array of style/styleArray";
 import lastlogo from "../../assets/components/Auto Layout Horizontal.png";
+import { useParams } from "react-router-dom";
 
 const Frame = () => {
   const [selectedTab, setSelectedTab] = useState("Link");
@@ -15,16 +16,38 @@ const Frame = () => {
   const [banner, setBanner] = useState("");
   const [userData, setUserData] = useState("");
   const [selectedLayout, setSelectedLayout] = useState("stack");
+  const { userId } = useParams();
+  const [id, setId] = useState(null);
 
   useEffect(() => {
+    if (userId && userId !== "null") {
+      setId(userId);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      if (!id || id === "null") return;
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/user/profile/${id}`
+        );
+        console.log("User data fetched:", response.data.data);
+        setUserData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserDetails();
+  }, [id]);
+
+  useEffect(() => {
+    if (!id || id === "null") return;
     const fetchAppearanceSettings = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/appearance`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          `${import.meta.env.VITE_BACKEND_URL}/api/appearance/${id}`
         );
 
         if (response.status === 200 && response.data.appearance) {
@@ -128,30 +151,19 @@ const Frame = () => {
       }
     };
 
-    const fetchuserDetails = async () => {
-      try {
-        const token = localStorage.getItem("token"); // Get token from local storage
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/user/profile`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setUserData(response.data.data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
     const fetchLinks = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/link/linkdetails`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          `${import.meta.env.VITE_BACKEND_URL}/api/link/linkdetails/${id}`
         );
 
-        if (response.status === 200 && response.data.data) {
-          const fetchedData = response.data.data;
+        console.log("Link details response:", response.data);
+
+        if (response.status === 200 && Array.isArray(response.data.data)) {
+          const fetchedData = response.data.data[0]; // Access the first element of the array
+          console.log("Fetched data:", fetchedData);
+          console.log("Links fetched:", fetchedData.link);
+          console.log("Shops fetched:", fetchedData.shop);
           setLinks(fetchedData.link || []);
           setShops(fetchedData.shop || []);
         }
@@ -161,20 +173,114 @@ const Frame = () => {
     };
 
     fetchAppearanceSettings();
-    fetchuserDetails();
     fetchLinks();
-  }, []);
+  }, [id]);
 
-  const handleRedirect = async (linkId) => {
+  const getDeviceInfo = async () => {
+    const userAgent = navigator.userAgent;
+    let os = "Unknown OS";
+
+    if (userAgent.indexOf("Win") !== -1) os = "Windows";
+    if (userAgent.indexOf("Mac") !== -1) os = "MacOS";
+    if (userAgent.indexOf("X11") !== -1) os = "UNIX";
+    if (userAgent.indexOf("Linux") !== -1) os = "Linux";
+    if (userAgent.indexOf("Android") !== -1) os = "Android";
+    if (userAgent.indexOf("like Mac") !== -1) os = "iOS";
+
+    const ipResponse = await axios.get("https://api64.ipify.org?format=json");
+    const ipAddress = ipResponse.data.ip;
+
+    return { os, ipAddress };
+  };
+
+  const handleTabClick = async (tabName) => {
+    setSelectedTab(tabName);
+
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/link/redirect/${linkId}`
+      const deviceInfo = await getDeviceInfo();
+      const token = localStorage.getItem("token");
+
+      if (!id) {
+        return;
+      }
+
+      // ✅ Send a default `itemId` and `application` for tab clicks
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/track/click`,
+        {
+          userId: id, // Ensure user ID is sent
+          itemId: "tabClick", // Use a dummy ID for tab clicks
+          type: tabName.toLowerCase(), // Ensure lowercase ("link" or "shop")
+          application: "Tab Click", // Provide a default application name
+          os: deviceInfo.os,
+          ip: deviceInfo.ipAddress,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-      window.location.href = response.data.redirectUrl;
     } catch (error) {
-      console.error("Error redirecting:", error);
+      console.error("Error tracking click:", error);
     }
   };
+
+  const handleCTA = async () => {
+    try {
+      const deviceInfo = await getDeviceInfo();
+      const token = localStorage.getItem("token");
+
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/track/cta-click`,
+        {
+          userId: id, // ✅ Current user ID
+          ip: deviceInfo.ipAddress, // ✅ User IP
+          os: deviceInfo.os, // ✅ Device OS
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+    } catch (error) {
+      console.error("Error tracking CTA click:", error);
+    }
+  };
+
+  const handleRedirect = async (item, type) => {
+    try {
+      if (!id) {
+        console.error("User ID is missing!");
+        return;
+      }
+
+      const deviceInfo = await getDeviceInfo();
+      const token = localStorage.getItem("token");
+
+      let url = item.shopurl || item.linkurl;
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        url = `https://${url}`;
+      }
+
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/track/click`,
+        {
+          userId: id, // Use correct user ID
+          itemId: item._id, // **Yeh NULL ya UNDEFINED ho sakta hai**
+          type,
+          application: item.application,
+          os: deviceInfo.os,
+          ip: deviceInfo.ipAddress,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      window.open(url, "_blank");
+    } catch (error) {
+      console.error("Error tracking click:", error);
+    }
+  };
+
   return (
     <div
       className="frame-section"
@@ -201,7 +307,10 @@ const Frame = () => {
             <button
               key={tab}
               className={`tab-btn ${selectedTab === tab ? "active" : ""}`}
-              onClick={() => setSelectedTab(tab)}
+              onClick={() => {
+                setSelectedTab(tab); // Switches tab
+                handleTabClick(tab); // Tracks clicks
+              }}
             >
               {tab}
             </button>
@@ -218,7 +327,7 @@ const Frame = () => {
                   selectedLayout === "grid" ? "1fr 1fr" : "unset",
                 flexDirection: selectedLayout === "Carousel" ? "row" : "column",
                 height: selectedLayout === "Carousel" ? "100%" : "",
-                width: selectedLayout === "Carousel" ? "50rem" : "",
+                width: selectedLayout === "Carousel" ? "35rem" : "",
               }}
             >
               {links.length > 0 ? (
@@ -242,6 +351,7 @@ const Frame = () => {
                         flexDirection: "column",
                       }),
                     }}
+                    onClick={() => handleRedirect(link, "link")}
                   >
                     <span className="frame-icon"></span>
                     <span
@@ -276,7 +386,15 @@ const Frame = () => {
                   <div
                     key={shop._id}
                     className="frame-link"
-                    onClick={() => window.open(shop.shopurl, "_blank")}
+                    onClick={async () => {
+                      await handleRedirect(shop, "shop"); // Ensure tracking is recorded
+                      window.open(
+                        shop.shopurl.startsWith("http")
+                          ? shop.shopurl
+                          : `https://${shop.shopurl}`,
+                        "_blank"
+                      );
+                    }}
                     style={{
                       ...frameStyle,
                       ...(["grid", "Carousel"].includes(selectedLayout) && {
@@ -313,7 +431,9 @@ const Frame = () => {
           )}
         </div>
 
-        <button className="get-connected">Get Connected</button>
+        <button className="get-connected" onClick={handleCTA}>
+          Get Connected
+        </button>
         <div className="last-logo">
           <img src={lastlogo} alt="" />
         </div>

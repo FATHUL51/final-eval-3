@@ -34,12 +34,16 @@ body{
 }
 .maincontainers{
     display: flex;
+    overflow-x: scroll;
     flex-direction: column;
     align-items: center;
     position: relative;
+    height: 100vh;
 }
 .divconts{
     width: 45%;
+    overflow-x: scroll;
+    height: 100%;
 }
 .sparkss{
     font-size: xxx-large;

@@ -9,6 +9,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const device = require("express-device");
+const clickRoutes = require("./routes/clicks.router");
 dotenv.config();
 const PORT = process.env.PORT;
 
@@ -26,6 +27,7 @@ app.use(bodyParser.json());
 app.use("/api/user", userRoute);
 app.use("/api/link", linkRoute);
 app.use("/api", apperanceRoute);
+app.use("/api/track", clickRoutes);
 
 app.listen(PORT, () => {
   console.log("port is live now on", PORT);

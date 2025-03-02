@@ -16,55 +16,144 @@ import {
   Cell,
   Legend,
 } from "recharts";
-
-const dataLine = [
-  { name: "Jan", value: 1000 },
-  { name: "Feb", value: 1500 },
-  { name: "Mar", value: 2000 },
-  { name: "Apr", value: 1800 },
-  { name: "May", value: 2200 },
-  { name: "Jun", value: 2400 },
-  { name: "Jul", value: 2600 },
-];
-
-const dataBarDevices = [
-  { name: "Mac", value: 2000 },
-  { name: "iOS", value: 2500 },
-  { name: "Windows", value: 1500 },
-  { name: "Android", value: 1800 },
-  { name: "Other", value: 1200 },
-];
-
-const dataBarLinks = [
-  { name: "Link 1", value: 1300 },
-  { name: "Link 2", value: 2200 },
-  { name: "Link 3", value: 1800 },
-  { name: "Link 4", value: 2400 },
-];
-
-const dataPie = [
-  { name: "YouTube", value: 400 },
-  { name: "Facebook", value: 300 },
-  { name: "Instagram", value: 300 },
-  { name: "Other", value: 200 },
-];
+import axios from "axios";
 
 const COLORS = ["#66cdaa", "#2ecc71", "#27ae60", "#16a085"];
+
+const requiredSources = [
+  "Instagram",
+  "YouTube",
+  "Facebook",
+  "Twitter",
+  "Shopify",
+  "WooCommerce",
+  "BigCommerce",
+  "Magento",
+];
 
 const Analytixs = () => {
   const [metrics, setMetrics] = useState([]);
   const [selectedMetric, setSelectedMetric] = useState("Clicks on Links");
+  const [dataLine, setDataLine] = useState([]);
+  const [dataBarDevices, setDataBarDevices] = useState([]);
+  const [dataBarLinks, setDataBarLinks] = useState([]);
+  const [dataPie, setDataPie] = useState([]);
 
   useEffect(() => {
-    // Simulate fetching data from an API
-    setTimeout(() => {
-      setMetrics([
-        { title: "Clicks on Links", value: 2318, color: "#" },
-        { title: "Click on Shop", value: 7265, color: "#" },
-        { title: "CTA", value: 156, color: "#" },
-      ]);
-    }, 1000);
-  }, []);
+    const fetchAnalytics = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/track/analytics`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const analyticsData = response.data.data;
+
+        // Line Chart: 6-month data or from Jan to today
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth();
+
+        const lineData = [];
+        for (let i = 5; i >= 0; i--) {
+          const month = new Date(currentYear, currentMonth - i, 1);
+          lineData.push({
+            name: month.toLocaleString("default", { month: "short" }),
+            value: 0,
+          });
+        }
+
+        analyticsData.forEach((curr) => {
+          const createdAt = new Date(curr.createdAt);
+          if (createdAt.getFullYear() === currentYear) {
+            const month = createdAt.toLocaleString("default", {
+              month: "short",
+            });
+            const existing = lineData.find((item) => item.name === month);
+            if (existing) existing.value += 1;
+          }
+        });
+
+        // Filter out months with zero values if they are before the current month
+        const filteredLineData = lineData.filter((data, index) => {
+          const monthIndex = currentMonth - 5 + index;
+          return monthIndex >= 0 || data.value > 0;
+        });
+
+        setDataLine(filteredLineData);
+
+        // Bar Chart: Traffic by Device
+        const deviceData = {};
+        analyticsData.forEach((curr) => {
+          deviceData[curr.os] = (deviceData[curr.os] || 0) + 1;
+        });
+
+        setDataBarDevices(
+          Object.keys(deviceData).map((device) => ({
+            name: device,
+            value: deviceData[device],
+          }))
+        );
+
+        // Bar Chart: Clicks by Links (Shop & Socials)
+        const linkData = {};
+        analyticsData.forEach((curr) => {
+          if (requiredSources.includes(curr.application)) {
+            linkData[curr.application] = (linkData[curr.application] || 0) + 1;
+          }
+        });
+
+        setDataBarLinks(
+          Object.keys(linkData).map((app) => ({
+            name: app,
+            value: linkData[app],
+          }))
+        );
+
+        // Pie Chart: Clicks by Sources (Only required applications)
+        const pieData = [];
+        requiredSources.forEach((app) => {
+          const count = analyticsData.filter(
+            (entry) => entry.application === app
+          ).length;
+          if (count > 0) {
+            pieData.push({ name: app, value: count });
+          }
+        });
+
+        setDataPie(pieData);
+
+        // Set metrics for Overview Cards
+        setMetrics([
+          {
+            title: "Clicks on Links",
+            value: lineData.reduce((acc, curr) => acc + curr.value, 0),
+            color: "#66cdaa",
+          },
+          {
+            title: "Clicks on Shop",
+            value: Object.values(deviceData).reduce(
+              (acc, curr) => acc + curr,
+              0
+            ),
+            color: "#2ecc71",
+          },
+          {
+            title: "CTA Clicks",
+            value: pieData.reduce((acc, curr) => acc + curr.value, 0),
+            color: "#27ae60",
+          },
+        ]);
+      } catch (error) {
+        console.error("Error fetching analytics data:", error);
+      }
+    };
+
+    fetchAnalytics();
+  }, [selectedMetric]);
 
   return (
     <div className="container1">
@@ -160,9 +249,14 @@ const Analytixs = () => {
             <div className="chart-box">
               <h3>Traffic by Links</h3>
               <BarChart width={300} height={200} data={dataBarLinks}>
-                <XAxis dataKey="name" />
+                <XAxis
+                  dataKey="name"
+                  tickFormatter={(name) =>
+                    name.length > 8 ? name.substring(0, 6) + "..." : name
+                  }
+                />
                 <YAxis />
-                <Tooltip />
+                <Tooltip formatter={(value) => `${value} clicks`} />
                 <Bar dataKey="value" fill="#27ae60" />
               </BarChart>
             </div>

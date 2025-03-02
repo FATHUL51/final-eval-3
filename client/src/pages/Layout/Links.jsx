@@ -12,6 +12,7 @@ import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 import "../toastify.css";
 import Switch from "../../components/Switch/Switch";
+import { useNavigate } from "react-router-dom";
 
 function Links() {
   const [selectedTab, setSelectedTab] = useState("Link");
@@ -22,7 +23,7 @@ function Links() {
   const [selectedFont, setSelectedFont] = useState("Arial");
   const [frameStyle, setFrameStyle] = useState({});
   const [frameBgColor, setFrameBgColor] = useState("#ffffff");
-  const [banner, setBanner] = useState("");
+  const [banner, setBanner] = useState("#342b26");
   const [modal, setModal] = useState(false);
   const [linktitle, setLinktitle] = useState("");
   const [linkurl, setLinkurl] = useState("");
@@ -34,6 +35,9 @@ function Links() {
   const [editingItem, setEditingItem] = useState(null);
   const [bio, setBio] = useState("");
   const [selectedLayout, setSelectedLayout] = useState("stack");
+  const [id, setId] = useState("");
+
+  const navigate = useNavigate();
 
   const showSuccessToast = (message) => {
     Toastify({
@@ -173,14 +177,16 @@ function Links() {
 
     const fetchuserDetails = async () => {
       try {
-        const token = localStorage.getItem("token"); // Get token from local storage
+        const token = localStorage.getItem("token");
         const response = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/user/profile`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        setUserData(response.data.data);
+
+        if (response.status === 200) {
+          setUserData(response.data.data); // Store the user data
+          setId(response.data.data._id); // Set the user ID properly
+        }
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -189,6 +195,23 @@ function Links() {
     fetchAppearanceSettings();
     fetchuserDetails();
   }, []);
+
+  const getDeviceInfo = async () => {
+    const userAgent = navigator.userAgent;
+    let os = "Unknown OS";
+
+    if (userAgent.indexOf("Win") !== -1) os = "Windows";
+    if (userAgent.indexOf("Mac") !== -1) os = "MacOS";
+    if (userAgent.indexOf("X11") !== -1) os = "UNIX";
+    if (userAgent.indexOf("Linux") !== -1) os = "Linux";
+    if (userAgent.indexOf("Android") !== -1) os = "Android";
+    if (userAgent.indexOf("like Mac") !== -1) os = "iOS";
+
+    const ipResponse = await axios.get("https://api64.ipify.org?format=json");
+    const ipAddress = ipResponse.data.ip;
+
+    return { os, ipAddress };
+  };
 
   const fetchLinks = async () => {
     try {
@@ -204,6 +227,7 @@ function Links() {
         setShops(fetchedData.shop || []);
         setBanner(fetchedData.banner);
         setBio(fetchedData.bio);
+        setId(fetchedData._id);
       }
     } catch (error) {
       console.error("Error fetching links:", error);
@@ -213,16 +237,42 @@ function Links() {
     fetchLinks();
   }, []);
 
-  const handleRedirect = async (linkId) => {
+  const handleRedirect = async (item, type) => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/link/redirect/${linkId}`
+      if (!id) {
+        console.error("User ID is missing!");
+        return;
+      }
+
+      const deviceInfo = await getDeviceInfo();
+      const token = localStorage.getItem("token");
+
+      let url = item.shopurl || item.linkurl;
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        url = `https://${url}`;
+      }
+
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/track/click`,
+        {
+          userId: id, // Use correct user ID
+          itemId: item._id, // **Yeh NULL ya UNDEFINED ho sakta hai**
+          type,
+          application: item.application,
+          os: deviceInfo.os,
+          ip: deviceInfo.ipAddress,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-      window.location.href = response.data.redirectUrl;
+
+      window.open(url, "_blank");
     } catch (error) {
-      console.error("Error redirecting:", error);
+      console.error("Error tracking click:", error);
     }
   };
+
   const handlesavelink = async (e) => {
     e.preventDefault();
     try {
@@ -325,6 +375,7 @@ function Links() {
       showErrorToast("Error deleting");
     }
   };
+
   const handleEdit = (item) => {
     setModal(true);
     console.log("Editing Item ID set in frontend:", item._id);
@@ -341,6 +392,7 @@ function Links() {
       setEditingItem(item._id); // Ensure correct ID is set
     }
   };
+
   const handlesavebio = async () => {
     try {
       const res = await axios.put(
@@ -362,6 +414,64 @@ function Links() {
     }
   };
 
+  const handleTabClick = async (tabName) => {
+    setSelectedTab(tabName);
+
+    try {
+      const deviceInfo = await getDeviceInfo();
+      const token = localStorage.getItem("token");
+
+      if (!id) {
+        console.error("User ID is missing!");
+        return;
+      }
+
+      // ✅ Send a default `itemId` and `application` for tab clicks
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/track/click`,
+        {
+          userId: id, // Ensure user ID is sent
+          itemId: "tabClick", // Use a dummy ID for tab clicks
+          type: tabName.toLowerCase(), // Ensure lowercase ("link" or "shop")
+          application: "Tab Click", // Provide a default application name
+          os: deviceInfo.os,
+          ip: deviceInfo.ipAddress,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+    } catch (error) {
+      console.error("Error tracking click:", error);
+    }
+  };
+
+  const handleCTA = async () => {
+    try {
+      const deviceInfo = await getDeviceInfo();
+      const token = localStorage.getItem("token");
+
+      await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/track/cta-click`,
+        {
+          userId: id, // ✅ Current user ID
+          ip: deviceInfo.ipAddress, // ✅ User IP
+          os: deviceInfo.os, // ✅ Device OS
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      console.log("CTA Click Tracked!");
+    } catch (error) {
+      console.error("Error tracking CTA click:", error);
+    }
+  };
+
+  const handleShare = async () => {
+    navigate(`/frame/${id}`);
+  };
   return (
     <div className="container1">
       <Sidebar />
@@ -377,6 +487,7 @@ function Links() {
                 className="frame-username"
                 style={{ backgroundColor: banner }}
               >
+                <button onClick={handleShare}>share</button>
                 <img
                   src="https://www.w3schools.com/howto/img_avatar.png"
                   alt="Avatar"
@@ -390,7 +501,10 @@ function Links() {
                   <button
                     key={tab}
                     className={`tab-btn ${selectedTab === tab ? "active" : ""}`}
-                    onClick={() => setSelectedTab(tab)}
+                    onClick={() => {
+                      setSelectedTab(tab); // Switches tab
+                      handleTabClick(tab); // Tracks clicks
+                    }}
                   >
                     {tab}
                   </button>
@@ -408,7 +522,7 @@ function Links() {
                       flexDirection:
                         selectedLayout === "Carousel" ? "row" : "column",
                       height: selectedLayout === "Carousel" ? "100%" : "",
-                      width: selectedLayout === "Carousel" ? "50rem" : "",
+                      width: selectedLayout === "Carousel" ? "35rem" : "",
                     }}
                   >
                     {links.length > 0 ? (
@@ -434,6 +548,7 @@ function Links() {
                               flexDirection: "column",
                             }),
                           }}
+                          onClick={() => handleRedirect(link, "link")}
                         >
                           <span className="frame-icon"></span>
                           <span
@@ -471,7 +586,15 @@ function Links() {
                         <div
                           key={shop._id}
                           className="frame-link"
-                          onClick={() => window.open(shop.shopurl, "_blank")}
+                          onClick={async () => {
+                            await handleRedirect(shop, "shop"); // Ensure tracking is recorded
+                            window.open(
+                              shop.shopurl.startsWith("http")
+                                ? shop.shopurl
+                                : `https://${shop.shopurl}`,
+                              "_blank"
+                            );
+                          }}
                           style={{
                             ...frameStyle,
                             ...(["grid", "Carousel"].includes(
@@ -512,7 +635,10 @@ function Links() {
                 )}
               </div>
 
-              <button className="get-connected">Get Connected</button>
+              <button className="get-connected" onClick={handleCTA}>
+                Get Connected
+              </button>
+
               <div className="last-logo">
                 <img src={lastlogo} alt="" />
               </div>
@@ -529,7 +655,6 @@ function Links() {
                     alt=""
                     className="profile-img"
                   />
-                  <button className="share">share</button>
                 </div>
                 <div className="profile-buttons">
                   <label className="custom-file-upload">
@@ -835,7 +960,18 @@ function Links() {
                 ></span>
               </div>
               <div className="color-input">
-                <span className="color black"></span>
+                <input
+                  style={{
+                    height: "2.5rem",
+                    padding: "0",
+                    borderRadius: "1rem",
+                  }}
+                  type="color"
+                  value={banner}
+                  onChange={(e) => {
+                    setBanner(e.target.value);
+                  }}
+                />
                 <input
                   type="text"
                   value={banner}

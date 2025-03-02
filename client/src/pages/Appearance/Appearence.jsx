@@ -446,7 +446,7 @@ const Appearence = () => {
                           : selectedLayout === "Carousel"
                           ? "100%"
                           : "",
-                      width: selectedLayout === "Carousel" ? "50rem" : "",
+                      width: selectedLayout === "Carousel" ? "35rem" : "",
                     }}
                   >
                     {links.length > 0 ? (
