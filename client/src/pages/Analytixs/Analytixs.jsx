@@ -38,6 +38,8 @@ const Analytixs = () => {
   const [dataBarDevices, setDataBarDevices] = useState([]);
   const [dataBarLinks, setDataBarLinks] = useState([]);
   const [dataPie, setDataPie] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [datas, setDatas] = useState([]);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -50,6 +52,7 @@ const Analytixs = () => {
           }
         );
 
+        setDatas(response.data.data);
         const analyticsData = response.data.data;
 
         // Line Chart: 6-month data or from Jan to today
@@ -126,29 +129,39 @@ const Analytixs = () => {
 
         setDataPie(pieData);
 
-        // Set metrics for Overview Cards
+        // Calculate metrics for Overview Cards
+        const clicksOnLinks = analyticsData.filter(
+          (entry) => entry.type === "link"
+        ).length;
+        const clicksOnShop = analyticsData.filter(
+          (entry) => entry.type === "shop"
+        ).length;
+        const ctaClicks = analyticsData.filter(
+          (entry) => entry.application === "Get Connected"
+        ).length;
+
         setMetrics([
           {
             title: "Clicks on Links",
-            value: lineData.reduce((acc, curr) => acc + curr.value, 0),
+            value: clicksOnLinks,
             color: "#66cdaa",
           },
           {
             title: "Clicks on Shop",
-            value: Object.values(deviceData).reduce(
-              (acc, curr) => acc + curr,
-              0
-            ),
+            value: clicksOnShop,
             color: "#2ecc71",
           },
           {
             title: "CTA Clicks",
-            value: pieData.reduce((acc, curr) => acc + curr.value, 0),
+            value: ctaClicks,
             color: "#27ae60",
           },
         ]);
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching analytics data:", error);
+        setLoading(false);
       }
     };
 
@@ -161,106 +174,116 @@ const Analytixs = () => {
       <div className="main-content">
         <Navbar />
         <div className="contentsss">
-          {/* Overview Section */}
-          <div className="overview">
-            {metrics.map((metric, index) => (
-              <div
-                key={index}
-                className="card"
-                style={{
-                  borderColor: metric.color,
-                  backgroundColor:
-                    selectedMetric === metric.title ? "#22D679" : "#DCFFEB",
-                  cursor: "pointer",
-                }}
-                onClick={() => setSelectedMetric(metric.title)}
-              >
-                <p
-                  style={{
-                    color: selectedMetric === metric.title ? "#fff" : "#000",
-                  }}
-                >
-                  {metric.title}
-                </p>
-                <h2
-                  style={{
-                    color: selectedMetric === metric.title ? "#fff" : "#000",
-                  }}
-                >
-                  {metric.value}
-                </h2>
+          {loading ? (
+            <p>Loading...</p>
+          ) : datas.length === 0 ? (
+            <p>No data available</p>
+          ) : (
+            <>
+              {/* Overview Section */}
+              <div className="overview">
+                {metrics.map((metric, index) => (
+                  <div
+                    key={index}
+                    className="card"
+                    style={{
+                      borderColor: metric.color,
+                      backgroundColor:
+                        selectedMetric === metric.title ? "#22D679" : "#DCFFEB",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => setSelectedMetric(metric.title)}
+                  >
+                    <p
+                      style={{
+                        color:
+                          selectedMetric === metric.title ? "#fff" : "#000",
+                      }}
+                    >
+                      {metric.title}
+                    </p>
+                    <h2
+                      style={{
+                        color:
+                          selectedMetric === metric.title ? "#fff" : "#000",
+                      }}
+                    >
+                      {metric.value}
+                    </h2>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Line Chart */}
-          <div className="chart-container">
-            <LineChart width={600} height={250} data={dataLine}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <CartesianGrid strokeDasharray="3 3" />
-              <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#000"
-                strokeWidth={2}
-              />
-            </LineChart>
-          </div>
+              {/* Line Chart */}
+              <div className="chart-container">
+                <LineChart width={600} height={250} data={dataLine}>
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#000"
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </div>
 
-          {/* Bottom Section */}
-          <div className="bottom-section">
-            {/* Bar Chart - Traffic by Device */}
-            <div className="chart-box">
-              <h3>Traffic by Device</h3>
-              <BarChart width={300} height={200} data={dataBarDevices}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="value" fill="#2ecc71" />
-              </BarChart>
-            </div>
+              {/* Bottom Section */}
+              <div className="bottom-section">
+                {/* Bar Chart - Traffic by Device */}
+                <div className="chart-box">
+                  <h3>Traffic by Device</h3>
+                  <BarChart width={300} height={200} data={dataBarDevices}>
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="value" fill="#2ecc71" />
+                  </BarChart>
+                </div>
 
-            {/* Pie Chart - Sources */}
-            <div className="chart-box">
-              <h3>Sources</h3>
-              <PieChart width={200} height={200}>
-                <Pie
-                  data={dataPie}
-                  dataKey="value"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={60}
-                  label
-                >
-                  {dataPie.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
+                {/* Pie Chart - Sources */}
+                <div className="chart-box">
+                  <h3>Sources</h3>
+                  <PieChart width={200} height={200}>
+                    <Pie
+                      data={dataPie}
+                      dataKey="value"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={60}
+                      label
+                    >
+                      {dataPie.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Legend />
+                  </PieChart>
+                </div>
+
+                {/* Bar Chart - Traffic by Links */}
+                <div className="chart-box">
+                  <h3>Traffic by Links</h3>
+                  <BarChart width={300} height={200} data={dataBarLinks}>
+                    <XAxis
+                      dataKey="name"
+                      tickFormatter={(name) =>
+                        name.length > 8 ? name.substring(0, 6) + "..." : name
+                      }
                     />
-                  ))}
-                </Pie>
-                <Legend />
-              </PieChart>
-            </div>
-
-            {/* Bar Chart - Traffic by Links */}
-            <div className="chart-box">
-              <h3>Traffic by Links</h3>
-              <BarChart width={300} height={200} data={dataBarLinks}>
-                <XAxis
-                  dataKey="name"
-                  tickFormatter={(name) =>
-                    name.length > 8 ? name.substring(0, 6) + "..." : name
-                  }
-                />
-                <YAxis />
-                <Tooltip formatter={(value) => `${value} clicks`} />
-                <Bar dataKey="value" fill="#27ae60" />
-              </BarChart>
-            </div>
-          </div>
+                    <YAxis />
+                    <Tooltip formatter={(value) => `${value} clicks`} />
+                    <Bar dataKey="value" fill="#27ae60" />
+                  </BarChart>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

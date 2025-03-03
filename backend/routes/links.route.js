@@ -148,15 +148,23 @@ router.put("/linkupdate/:id", authMiddleware, async (req, res) => {
 // Update Banner and Bio
 router.put("/updateBannerBio", authMiddleware, async (req, res) => {
   const { bio, banner } = req.body;
+  if (!bio && !banner) {
+    return res.status(400).json({ message: "Bio or Banner is required" });
+  }
 
   try {
-    const user = req.user.id;
+    const user = req.user._id; // ✅ Ensure user ID is available
+
     let existingLink = await Link.findOne({ user });
+    console.log("✅ Found Link Document:", existingLink);
 
     if (!existingLink) {
-      // Create a new Link document if none exists
+      console.log("🚀 No existing document found. Creating a new one...");
+
+      // ✅ Ensure the `username` field is included
       const newLink = new Link({
         user,
+        username: req.user.username, // ✅ Make sure `username` is provided
         bio: bio || "",
         banner: banner || "",
         link: [],
@@ -164,16 +172,15 @@ router.put("/updateBannerBio", authMiddleware, async (req, res) => {
       });
 
       await newLink.save();
-
       return res.status(201).json({
         message: "Banner and Bio created successfully",
         data: newLink,
       });
     }
 
-    if (bio) existingLink.bio = bio;
-    if (banner) existingLink.banner = banner;
-
+    // ✅ Update existing document
+    existingLink.bio = bio || existingLink.bio;
+    existingLink.banner = banner || existingLink.banner;
     await existingLink.save();
 
     res.status(200).json({
@@ -181,7 +188,7 @@ router.put("/updateBannerBio", authMiddleware, async (req, res) => {
       data: existingLink,
     });
   } catch (error) {
-    console.error("Error updating banner and bio:", error);
+    console.error("❌ Error updating banner and bio:", error);
     res.status(400).json({ message: error.message || "An error occurred" });
   }
 });

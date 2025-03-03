@@ -31,7 +31,6 @@ const ShopSchema = new mongoose.Schema({
   shopurl: { type: String, required: true },
   application: {
     type: String,
-    enum: ["Shopify", "WooCommerce", "BigCommerce", "Magento"],
     required: true,
   },
   analytics: [AnalyticsSchema],
@@ -47,7 +46,6 @@ const LinkSchema = new mongoose.Schema({
       linkurl: { type: String, required: true },
       application: {
         type: String,
-        enum: ["Facebook", "Instagram", "Twitter", "YouTube"],
         required: true,
       },
       analytics: [AnalyticsSchema],

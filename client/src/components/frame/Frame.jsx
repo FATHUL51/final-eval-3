@@ -160,12 +160,10 @@ const Frame = () => {
         console.log("Link details response:", response.data);
 
         if (response.status === 200 && Array.isArray(response.data.data)) {
-          const fetchedData = response.data.data[0]; // Access the first element of the array
-          console.log("Fetched data:", fetchedData);
-          console.log("Links fetched:", fetchedData.link);
-          console.log("Shops fetched:", fetchedData.shop);
+          const fetchedData = response.data.data[0];
           setLinks(fetchedData.link || []);
           setShops(fetchedData.shop || []);
+          setBanner(fetchedData.banner);
         }
       } catch (error) {
         console.error("Error fetching links:", error);

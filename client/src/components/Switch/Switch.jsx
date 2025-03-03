@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-const Switch = () => {
+const Switch = (values) => {
   return (
     <StyledWrapper>
       <label className="switch">

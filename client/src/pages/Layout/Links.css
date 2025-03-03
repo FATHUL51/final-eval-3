@@ -135,7 +135,6 @@
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
-    background-color: #28A263;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -451,6 +450,7 @@
 } 
 .modal-overlay{
     position: absolute;
+    width: 27rem;
     background-color:white ;
     padding: 1rem 2rem;
     border-radius: 1rem;
@@ -486,6 +486,7 @@
 }
 .modal-container1{
     display: flex;
+    position: relative;
     flex-direction: column;
     width: 100%;
     gap: 1rem;
@@ -500,5 +501,99 @@
     padding: 0.8rem 2rem;
     border-radius: 2rem;
     border: none;
-    background-color: #e1e1e1;
+    
 }
+.app-button{
+    background-color: transparent;
+    img{
+        width: 3rem;
+    }
+}
+.app-icons{
+    display: flex;
+    gap: 1rem;
+}
+.delete{
+    background-color: transparent;
+    border: none;
+    img{
+        width: 2rem;
+    }
+}
+/* From Uiverse.io by ClawHack1 */ 
+/* Genel stil */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 24px;
+    margin: 10px;
+  }
+  
+  /* Giriş stil */
+  .toggle-switch .toggle-input {
+    display: none;
+  }
+  
+  /* Anahtarın stilinin etrafındaki etiketin stil */
+  .toggle-switch .toggle-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 24px;
+    background-color: #9B9B9B;
+    border-radius: 34px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  /* Anahtarın yuvarlak kısmının stil */
+  .toggle-switch .toggle-label::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    background-color: #fff;
+    box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s;
+  }
+  
+  /* Anahtarın etkin hale gelmesindeki stil değişiklikleri */
+  .toggle-switch .toggle-input:checked + .toggle-label {
+    background-color: #28A263;
+  }
+  
+  .toggle-switch .toggle-input:checked + .toggle-label::before {
+    transform: translateX(16px);
+  }
+  
+  /* Light tema */
+  .toggle-switch.light .toggle-label {
+    background-color: #BEBEBE;
+  }
+  
+  .toggle-switch.light .toggle-input:checked + .toggle-label {
+    background-color: #9B9B9B;
+  }
+  
+  .toggle-switch.light .toggle-input:checked + .toggle-label::before {
+    transform: translateX(6px);
+  }
+  
+  /* Dark tema */
+  .toggle-switch.dark .toggle-label {
+    background-color: #4B4B4B;
+  }
+  
+  .toggle-switch.dark .toggle-input:checked + .toggle-label {
+    background-color: #717171;
+  }
+  
+  .toggle-switch.dark .toggle-input:checked + .toggle-label::before {
+    transform: translateX(16px);
+  }
+  

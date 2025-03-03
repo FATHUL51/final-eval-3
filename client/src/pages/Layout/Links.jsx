@@ -13,6 +13,17 @@ import "toastify-js/src/toastify.css";
 import "../toastify.css";
 import Switch from "../../components/Switch/Switch";
 import { useNavigate } from "react-router-dom";
+import insagram from "../../assets/icons/icons8-instagram-48.png";
+import youtube from "../../assets/icons/icons8-youtube-48.png";
+import xpng from "../../assets/icons/icons8-twitter-50.png";
+import facebook from "../../assets/icons/icons8-facebook-logo-48.png";
+import delete1 from "../../assets/icons/material-symbols-light_delete-outline.png";
+import paste from "../../assets/icons/Frame.png";
+import WooCommerce from "../../assets/icons/icons8-woocommerce-24.png";
+import BigCommerce from "../../assets/icons/icons8-bigcommerce-48.png";
+import shopify from "../../assets/icons/icons8-shopify-48.png";
+import magento from "../../assets/icons/magento-icon.png";
+import edit from "../../assets/icons/system-uicons_write.png";
 
 function Links() {
   const [selectedTab, setSelectedTab] = useState("Link");
@@ -29,15 +40,25 @@ function Links() {
   const [linkurl, setLinkurl] = useState("");
   const [shoptitle, setShoptitle] = useState("");
   const [shopurl, setShopurl] = useState("");
-  const [linkapplication, setLinkapplication] = useState("");
-  const [shopapplication, setShopapplication] = useState("");
+  const [linkapplication, setLinkapplication] = useState("Instagram");
+
+  const [shopapplication, setShopapplication] = useState("Shopify");
   const [userData, setUserData] = useState("");
   const [editingItem, setEditingItem] = useState(null);
   const [bio, setBio] = useState("");
   const [selectedLayout, setSelectedLayout] = useState("stack");
   const [id, setId] = useState("");
 
-  const navigate = useNavigate();
+  const appIcon = [
+    { application: "Instagram", value: insagram },
+    { application: "YouTube", value: youtube },
+    { application: "Facebook", value: facebook },
+    { application: "Twitter", value: xpng },
+    { application: "Shopify", value: shopify },
+    { application: "WooCommerce", value: WooCommerce },
+    { application: "BigCommerce", value: BigCommerce },
+    { application: "Magento", value: magento },
+  ];
 
   const showSuccessToast = (message) => {
     Toastify({
@@ -300,6 +321,9 @@ function Links() {
 
       if (res.status === 200) {
         setModal(false);
+        setLinktitle("");
+        setLinkurl("");
+        setLinkapplication("");
         fetchLinks();
         showSuccessToast(
           editingItem
@@ -308,7 +332,7 @@ function Links() {
         );
         setEditingItem(null);
       } else {
-        throw new Error("Failed to save");
+        showErrorToast("link created unsuccessful");
       }
     } catch (error) {
       showErrorToast("Error saving data");
@@ -344,6 +368,9 @@ function Links() {
 
       if (res.status === 200) {
         setModal(false);
+        setShoptitle("");
+        setShopurl("");
+        setShopapplication("");
         fetchLinks();
         showSuccessToast("Shop updated successfully");
         setEditingItem(null);
@@ -374,6 +401,16 @@ function Links() {
       console.error("Error deleting:", error);
       showErrorToast("Error deleting");
     }
+  };
+  const handleshopclear = async () => {
+    setShoptitle("");
+    setShopurl("");
+    setShopapplication("");
+  };
+  const hanlelinkclear = async () => {
+    setLinktitle("");
+    setLinkurl("");
+    setLinkapplication("");
   };
 
   const handleEdit = (item) => {
@@ -410,7 +447,10 @@ function Links() {
       }
     } catch (error) {
       console.error("Error deleting:", error);
-      showErrorToast("Error deleting");
+      showErrorToast(
+        "No existing document found. Click oncs more on save ",
+        error
+      );
     }
   };
 
@@ -470,7 +510,25 @@ function Links() {
   };
 
   const handleShare = async () => {
-    navigate(`/frame/${id}`);
+    navigator.clipboard.writeText(`http://localhost:5173/frame/${id}`);
+    showSuccessToast("link copied");
+  };
+
+  const handlePastelinks = async () => {
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      setLinkurl(clipboardText);
+    } catch (err) {
+      console.error("Failed to paste:", err);
+    }
+  };
+  const handlePasteshop = async () => {
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      setShopurl(clipboardText);
+    } catch (err) {
+      console.error("Failed to paste:", err);
+    }
   };
   return (
     <div className="container1">
@@ -485,9 +543,14 @@ function Links() {
             <div className="frame" style={{ backgroundColor: frameBgColor }}>
               <div
                 className="frame-username"
-                style={{ backgroundColor: banner }}
+                style={{ backgroundColor: banner, position: "relative" }}
               >
-                <button onClick={handleShare}>share</button>
+                <button
+                  style={{ position: "absolute", top: "10px", left: "5px" }}
+                  onClick={handleShare}
+                >
+                  <img src={paste} style={{ width: "2rem" }} />
+                </button>
                 <img
                   src="https://www.w3schools.com/howto/img_avatar.png"
                   alt="Avatar"
@@ -550,7 +613,18 @@ function Links() {
                           }}
                           onClick={() => handleRedirect(link, "link")}
                         >
-                          <span className="frame-icon"></span>
+                          <span className="frame-icon">
+                            <img
+                              src={
+                                appIcon.find(
+                                  (icon) =>
+                                    icon.application === link.application
+                                )?.value
+                              }
+                              alt={link.application}
+                            />
+                          </span>
+
                           <span
                             style={{
                               textAlign: ["grid", "Carousel"].includes(
@@ -614,7 +688,18 @@ function Links() {
                             }),
                           }}
                         >
-                          <span className="frame-icon"></span>
+                          <span className="frame-icon">
+                            <img
+                              src={
+                                appIcon.find(
+                                  (icon) =>
+                                    icon.application === shop.application
+                                )?.value
+                              }
+                              alt={shop.application}
+                            />
+                          </span>
+
                           <span
                             style={{
                               textAlign: ["grid", "Carousel"].includes(
@@ -716,15 +801,45 @@ function Links() {
                   <ul>
                     {links.map((link, index) => (
                       <li key={index}>
-                        {link.linktitle} - {link.linkurl} - {link.application}
+                        <h5>
+                          {link.linktitle}{" "}
+                          <button
+                            className="edits"
+                            onClick={() => handleEdit(link)}
+                          >
+                            <img src={edit} />
+                          </button>
+                        </h5>
+                        <div>
+                          <div className="toggle-switch">
+                            <input
+                              className="toggle-input"
+                              id="toggle"
+                              type="checkbox"
+                              defaultChecked
+                              disabled
+                            />
+                            <label className="toggle-label" htmlFor="toggle" />
+                          </div>
+                        </div>
+                        <h5>
+                          {link.linkurl}{" "}
+                          <button
+                            className="edits"
+                            onClick={() => handleEdit(link)}
+                          >
+                            <img src={edit} />
+                          </button>
+                        </h5>
+
                         <button
+                          className="deletes"
                           onClick={() => {
                             handleDelete(link._id);
                           }}
                         >
-                          delete
+                          <img src={delete1} alt="" />
                         </button>
-                        <button onClick={() => handleEdit(link)}>Edit</button>
                       </li>
                     ))}
                   </ul>
@@ -733,15 +848,45 @@ function Links() {
                   <ul>
                     {shops.map((shop, index) => (
                       <li key={index}>
-                        {shop.shopname} - {shop.shopurl} - {shop.application}
+                        <h5>
+                          {shop.shopname}{" "}
+                          <button
+                            className="edits"
+                            onClick={() => handleEdit(shop)}
+                          >
+                            <img src={edit} />
+                          </button>
+                        </h5>
+                        <div>
+                          <div className="toggle-switch">
+                            <input
+                              className="toggle-input"
+                              id="toggle"
+                              type="checkbox"
+                              defaultChecked
+                              disabled
+                            />
+                            <label className="toggle-label" htmlFor="toggle" />
+                          </div>
+                        </div>
+                        <h5>
+                          {shop.shopurl}{" "}
+                          <button
+                            className="edits"
+                            onClick={() => handleEdit(shop)}
+                          >
+                            <img src={edit} />
+                          </button>
+                        </h5>
+
                         <button
+                          className="deletes"
                           onClick={() => {
                             handleDelete(shop._id);
                           }}
                         >
-                          delete
+                          <img src={delete1} alt="" />
                         </button>
-                        <button onClick={() => handleEdit(shop)}>Edit</button>
                       </li>
                     ))}
                   </ul>
@@ -803,41 +948,105 @@ function Links() {
                       <div className="app-icons">
                         <button
                           className="app-button"
+                          style={{
+                            border:
+                              linkapplication === "Instagram"
+                                ? "1px solid black"
+                                : "none",
+                          }}
                           onClick={() => {
                             setLinkapplication("Instagram");
                           }}
                         >
-                          <img src="instagram.png" /> Instagram
+                          <img src={insagram} />{" "}
                         </button>
                         <button
+                          style={{
+                            border:
+                              linkapplication === "Facebook"
+                                ? "1px solid black"
+                                : "none",
+                          }}
                           className="app-button"
                           onClick={() => {
                             setLinkapplication("Facebook");
                           }}
                         >
-                          <img src="facebook.png" /> Facebook
+                          <img src={facebook} />
                         </button>
                         <button
+                          style={{
+                            border:
+                              linkapplication === "YouTube"
+                                ? "1px solid black"
+                                : "none",
+                          }}
                           className="app-button"
                           onClick={() => {
                             setLinkapplication("YouTube");
                           }}
                         >
-                          <img src="youtube.png" /> YouTube
+                          <img src={youtube} />
                         </button>
                         <button
+                          style={{
+                            border:
+                              linkapplication === "Twitter"
+                                ? "1px solid black"
+                                : "none",
+                          }}
                           className="app-button"
                           onClick={() => {
                             setLinkapplication("Twitter");
                           }}
                         >
-                          <img src="x.png" /> X
+                          <img src={xpng} />
                         </button>
-                        <button onClick={handlesavelink}>
-                          {editingItem ? "Update" : "Save"}
-                        </button>
+                        <div
+                          style={{
+                            position: "absolute",
+                            right: "16px",
+                            top: "4rem",
+                          }}
+                          onClick={handlesavelink}
+                        >
+                          <div>
+                            <div className="toggle-switch">
+                              <input
+                                className="toggle-input"
+                                id="toggle"
+                                type="checkbox"
+                              />
+                              <label
+                                className="toggle-label"
+                                htmlFor="toggle"
+                              />
+                            </div>
+                          </div>
+                        </div>
 
-                        <button onClick={handleDelete}>delete</button>
+                        <button
+                          className="delete"
+                          style={{
+                            position: "absolute",
+                            top: "8rem",
+                            right: "2px",
+                          }}
+                          onClick={hanlelinkclear}
+                        >
+                          <img src={delete1} />
+                        </button>
+                        <button
+                          className="delete"
+                          style={{
+                            position: "absolute",
+                            top: "8.3rem",
+                            right: "2.5rem",
+                          }}
+                          onClick={handlePastelinks}
+                        >
+                          <img style={{ width: "1.5rem" }} src={paste} />
+                        </button>
                       </div>
                     </div>
                   ) : (
@@ -865,41 +1074,98 @@ function Links() {
                       <div className="app-icons">
                         <button
                           className="app-button"
-                          onClick={() => {
-                            setShopapplication("Shopify");
+                          onClick={() => setShopapplication("Shopify")}
+                          style={{
+                            border:
+                              shopapplication === "Shopify"
+                                ? "1px solid black"
+                                : "none",
                           }}
                         >
-                          <img src="instagram.png" /> Shopify
+                          <img src={shopify} />
                         </button>
                         <button
                           className="app-button"
-                          onClick={() => {
-                            setShopapplication("WooCommerce");
+                          onClick={() => setShopapplication("WooCommerce")}
+                          style={{
+                            border:
+                              shopapplication === "WooCommerce"
+                                ? "1px solid black"
+                                : "none",
                           }}
                         >
-                          <img src="facebook.png" /> WooCommerce
+                          <img src={WooCommerce} />
                         </button>
                         <button
                           className="app-button"
-                          onClick={() => {
-                            setShopapplication("BigCommerce");
+                          onClick={() => setShopapplication("BigCommerce")}
+                          style={{
+                            border:
+                              shopapplication === "BigCommerce"
+                                ? "1px solid black"
+                                : "none",
                           }}
                         >
-                          <img src="youtube.png" /> BigCommerce
+                          <img src={BigCommerce} />
                         </button>
                         <button
                           className="app-button"
-                          onClick={() => {
-                            setShopapplication("Magento");
+                          onClick={() => setShopapplication("Magento")}
+                          style={{
+                            border:
+                              shopapplication === "Magento"
+                                ? "1px solid black"
+                                : "none",
                           }}
                         >
-                          <img src="x.png" /> Magento
-                        </button>
-                        <button onClick={handlesaveshop}>
-                          {editingItem ? "Update" : "Save"}
+                          <img src={magento} />
                         </button>
 
-                        <button>delete</button>
+                        <div
+                          style={{
+                            position: "absolute",
+                            right: "16px",
+                            top: "4rem",
+                          }}
+                          onClick={handlesaveshop}
+                        >
+                          <div>
+                            <div className="toggle-switch">
+                              <input
+                                className="toggle-input"
+                                id="toggle"
+                                type="checkbox"
+                              />
+                              <label
+                                className="toggle-label"
+                                htmlFor="toggle"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          className="delete"
+                          style={{
+                            position: "absolute",
+                            top: "8.3rem",
+                            right: "2.5rem",
+                          }}
+                          onClick={handlePasteshop}
+                        >
+                          <img style={{ width: "1.5rem" }} src={paste} />
+                        </button>
+                        <button
+                          className="delete"
+                          style={{
+                            position: "absolute",
+                            top: "8rem",
+                            right: "2px",
+                          }}
+                          onClick={handleshopclear}
+                        >
+                          <img src={delete1} />
+                        </button>
                       </div>
                     </div>
                   )}
