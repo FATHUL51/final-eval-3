@@ -19,7 +19,7 @@
     border-radius: 10px;
     width:100%;
     max-width: 1000px;
-    height:550px;
+    height:100vh;
     position: relative;
   }
   
@@ -57,7 +57,6 @@
     gap: 15px;
     margin-top: 20px;
     width:100%;
-    max-width: 500px;
     margin-left: 20px;
   }
   
@@ -72,6 +71,7 @@
   }
   
   .inputGroup input {
+    width: 90%;
     padding: 10px;
    margin-top: 6px;
     border: 0.94px solid #3E3E3E;
@@ -84,7 +84,7 @@
     justify-content: flex-end;
     margin-top: 20px;
     position: absolute;  /* Position it relative to the nearest positioned parent */
-    bottom: 40px;        /* 30px from the bottom */
+    bottom: 10px;        /* 30px from the bottom */
     right: 40px;         /* 30px from the right */
   }
   
@@ -97,4 +97,18 @@
     cursor: pointer;
     border: none;
     width:160px
+  }
+  @media (max-width:1023px) {
+    .maincontent11{
+      padding: 0rem 0 20px 0;
+      width: 95%;
+      margin: 0 auto;
+      overflow: scroll;
+    }
+   .saveButtonContainer{
+    bottom: 0rem;
+   }
+   .inputGroup{
+    width: 90%;
+   }
   }

@@ -3,6 +3,15 @@ import axios from "axios";
 import styleArray from "../array of style/styleArray";
 import lastlogo from "../../assets/components/Auto Layout Horizontal.png";
 import { useParams } from "react-router-dom";
+import insagram from "../../assets/icons/icons8-instagram-48.png";
+import youtube from "../../assets/icons/icons8-youtube-48.png";
+import xpng from "../../assets/icons/icons8-twitter-50.png";
+import facebook from "../../assets/icons/icons8-facebook-logo-48.png";
+import WooCommerce from "../../assets/icons/icons8-woocommerce-24.png";
+import BigCommerce from "../../assets/icons/icons8-bigcommerce-48.png";
+import shopify from "../../assets/icons/icons8-shopify-48.png";
+import magento from "../../assets/icons/magento-icon.png";
+import "./Frame.css";
 
 const Frame = () => {
   const [selectedTab, setSelectedTab] = useState("Link");
@@ -279,18 +288,27 @@ const Frame = () => {
     }
   };
 
+  const appIcon = [
+    { application: "Instagram", value: insagram },
+    { application: "YouTube", value: youtube },
+    { application: "Facebook", value: facebook },
+    { application: "Twitter", value: xpng },
+    { application: "Shopify", value: shopify },
+    { application: "WooCommerce", value: WooCommerce },
+    { application: "BigCommerce", value: BigCommerce },
+    { application: "Magento", value: magento },
+  ];
+
   return (
     <div
-      className="frame-section"
+      className="frame-sections"
       style={{
-        width: selectedLayout === "Carousel" ? "440px" : "50%",
-        margin: "auto",
         display: "flex",
         alignItems: "center",
         height: "100vh",
       }}
     >
-      <div className="frame" style={{ backgroundColor: frameBgColor }}>
+      <div className="frames" style={{ backgroundColor: frameBgColor }}>
         <div className="frame-username" style={{ backgroundColor: banner }}>
           <img
             src="https://www.w3schools.com/howto/img_avatar.png"
@@ -351,7 +369,16 @@ const Frame = () => {
                     }}
                     onClick={() => handleRedirect(link, "link")}
                   >
-                    <span className="frame-icon"></span>
+                    <span className="frame-icon">
+                      <img
+                        src={
+                          appIcon.find(
+                            (icon) => icon.application === link.application
+                          )?.value
+                        }
+                        alt={link.application}
+                      />
+                    </span>
                     <span
                       style={{
                         textAlign: ["grid", "Carousel"].includes(selectedLayout)
@@ -410,7 +437,16 @@ const Frame = () => {
                       }),
                     }}
                   >
-                    <span className="frame-icon"></span>
+                    <span className="frame-icon">
+                      <img
+                        src={
+                          appIcon.find(
+                            (icon) => icon.application === shop.application
+                          )?.value
+                        }
+                        alt={shop.application}
+                      />
+                    </span>
                     <span
                       style={{
                         textAlign: ["grid", "Carousel"].includes(selectedLayout)

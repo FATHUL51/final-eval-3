@@ -171,7 +171,7 @@ const Analytixs = () => {
   return (
     <div className="container1">
       <Sidebar />
-      <div className="main-content">
+      <div className="main-contents">
         <Navbar />
         <div className="contentsss">
           {loading ? (

@@ -99,3 +99,14 @@ body{
     position: absolute;
     bottom: 2rem;
 }
+@media (max-width:1023px) {
+    .container{
+        display: none;
+    }
+    .main{
+        display: flex;
+    }
+    .last{
+        bottom: -7rem;
+    }
+}

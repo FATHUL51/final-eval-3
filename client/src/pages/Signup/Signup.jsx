@@ -217,7 +217,7 @@ const Signup = () => {
     return password === confirmpass ? "green" : "red";
   };
   return (
-    <div className="mainss">
+    <div className="mains">
       <div className="maincontainers">
         <Logo />
         <h1 className="sparkss">Sign up to your Spark</h1>

@@ -14,6 +14,14 @@ const Settings = () => {
     password: "",
     confirmPassword: "",
   });
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Fetch User Data
   useEffect(() => {
@@ -99,7 +107,9 @@ const Settings = () => {
   return (
     <div className="container1">
       <Sidebar />
-      <div className="main-content">
+      <div
+        className={windowWidth < 1023 ? styles.maincontent11 : "main-content"}
+      >
         <Navbar />
         <div className={styles.formContainer}>
           <div className={styles.sectionTitle}>

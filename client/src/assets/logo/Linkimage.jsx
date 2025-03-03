@@ -1,13 +1,15 @@
 import React from "react";
 
-const Linkimage = (style) => {
+const Linkimage = ({ className, style }) => {
   return (
     <div
       style={{
         marginRight: "1rem",
         display: "flex",
         alignItems: "center",
+        ...style,
       }}
+      className={className}
     >
       <svg
         width="24"

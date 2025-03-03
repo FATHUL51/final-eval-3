@@ -492,3 +492,54 @@ border-radius: 0.5rem;
     border: none;
     }
   }
+  .open-frame{
+    display: none;
+  }
+  @media (max-width:1023px) {
+    .main-content{
+        padding: 0;
+        padding-bottom: 5rem;
+    }
+    .Themesdisplay{
+        grid-template-columns: 1fr 1fr;
+    }
+    .layout-buttons3{
+        grid-template-columns: 1fr 1fr;
+    }
+    .frame-sections{
+        display: block;
+        position: fixed;
+        z-index: 1;
+    }
+    .profile-container{
+        padding-bottom: 12rem;
+    }
+    .frame{
+        margin: 0;
+        height: 85vh;
+        width: 100vw;
+        border: none;
+    }
+    .people{
+        background-color: #000;
+        position: absolute;
+        bottom: 4.5rem;
+        padding: 0rem 1rem;
+        color: white;
+        border-radius: 2rem;
+        right: 47%;
+        z-index: 1;
+        font-weight: 600;
+        font-size: 1.5rem;
+    }
+    .open-frame{
+        display: block;
+        position: fixed;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        border: none;
+        background-color: aliceblue;
+        bottom: 7rem;
+        right: 40%;
+    }
+}

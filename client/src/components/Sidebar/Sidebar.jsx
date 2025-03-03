@@ -16,6 +16,14 @@ const Sidebar = () => {
     firstname: "",
     lastname: "",
   });
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -63,7 +71,10 @@ const Sidebar = () => {
           isActive ? "menu-item active" : "menu-item"
         }
       >
-        <Linkimage />
+        <Linkimage
+          className="icon"
+          style={{ marginRight: windowWidth > 1023 ? "1rem" : "0" }}
+        />
         <label>Links</label>
       </NavLink>
 

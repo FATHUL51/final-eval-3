@@ -8,6 +8,16 @@ import stack from "../../assets/components/Group 1171274801.png";
 import "./Appearence.css";
 import styleArray from "../../components/array of style/styleArray";
 import axios from "axios";
+import insagram from "../../assets/icons/icons8-instagram-48.png";
+import youtube from "../../assets/icons/icons8-youtube-48.png";
+import xpng from "../../assets/icons/icons8-twitter-50.png";
+import facebook from "../../assets/icons/icons8-facebook-logo-48.png";
+import WooCommerce from "../../assets/icons/icons8-woocommerce-24.png";
+import BigCommerce from "../../assets/icons/icons8-bigcommerce-48.png";
+import shopify from "../../assets/icons/icons8-shopify-48.png";
+import magento from "../../assets/icons/magento-icon.png";
+import Toastify from "toastify-js";
+import "toastify-js/src/toastify.css";
 
 const Appearence = () => {
   const [selectedTab, setSelectedTab] = useState("Link");
@@ -26,6 +36,8 @@ const Appearence = () => {
   const [banner, setBanner] = useState("");
   const [links, setLinks] = useState([]);
   const [shops, setShops] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [showModal, setShowModal] = useState(false);
 
   // Button groups
   const buttonGroups = [
@@ -63,6 +75,17 @@ const Appearence = () => {
     "#e5f9ef": "Themecont6",
     "#fcefe3": "Themecont7",
   };
+
+  const appIcon = [
+    { application: "Instagram", value: insagram },
+    { application: "YouTube", value: youtube },
+    { application: "Facebook", value: facebook },
+    { application: "Twitter", value: xpng },
+    { application: "Shopify", value: shopify },
+    { application: "WooCommerce", value: WooCommerce },
+    { application: "BigCommerce", value: BigCommerce },
+    { application: "Magento", value: magento },
+  ];
 
   const handleButtonClick = (button) => {
     setSelected(button);
@@ -301,6 +324,27 @@ const Appearence = () => {
       console.error("Error fetching appearance settings:", error);
     }
   };
+  const showSuccessToast = (message) => {
+    Toastify({
+      text: message,
+      duration: 3000,
+      close: true,
+      gravity: "top",
+      position: "center",
+      className: "toastify success-toast",
+    }).showToast();
+  };
+
+  const showErrorToast = (message) => {
+    Toastify({
+      text: message,
+      duration: 3000,
+      close: true,
+      gravity: "top",
+      position: "center",
+      className: "toastify error-toast",
+    }).showToast();
+  };
 
   // Save Appearance to Backend
   const handleSaveAppearance = async () => {
@@ -327,9 +371,9 @@ const Appearence = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log("Appearance updated!");
+      showSuccessToast("Appearance updated!");
     } catch (error) {
-      console.error("Error updating appearance:", error);
+      showErrorToast("Error updating appearance:", error);
     }
   };
 
@@ -374,6 +418,7 @@ const Appearence = () => {
     fetchuserDetails();
     fetchLinks();
   }, []);
+
   const fetchLinks = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -391,9 +436,27 @@ const Appearence = () => {
       console.error("Error fetching links:", error);
     }
   };
+
   useEffect(() => {
     fetchLinks();
   }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1023);
+    };
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleClick = () => {
+    if (isMobile) {
+      setShowModal(true);
+    }
+  };
+
+  const handleClose = () => setShowModal(false);
 
   return (
     <div className="container1">
@@ -468,12 +531,23 @@ const Appearence = () => {
                                   : selectedLayout === "Carousel"
                                   ? "100%"
                                   : "",
-                              width: "100%",
+                              width: "90%",
                               flexDirection: "column",
                             }),
                           }}
                         >
-                          <span className="frame-icon"></span>
+                          <span className="frame-icon">
+                            <img
+                              src={
+                                appIcon.find(
+                                  (icon) =>
+                                    icon.application === link.application
+                                )?.value
+                              }
+                              alt={link.application}
+                            />
+                          </span>
+
                           <span
                             style={{
                               textAlign: ["grid", "Carousel"].includes(
@@ -529,7 +603,18 @@ const Appearence = () => {
                             }),
                           }}
                         >
-                          <span className="frame-icon"></span>
+                          <span className="frame-icon">
+                            <img
+                              src={
+                                appIcon.find(
+                                  (icon) =>
+                                    icon.application === shop.application
+                                )?.value
+                              }
+                              alt={shop.application}
+                            />
+                          </span>
+
                           <span
                             style={{
                               textAlign: ["grid", "Carousel"].includes(
@@ -558,7 +643,207 @@ const Appearence = () => {
             </div>
           </div>
 
+          {isMobile && showModal && (
+            <>
+              <div
+                className="frame-sections"
+                style={{
+                  width: selectedLayout === "Carousel" ? "440px" : "auto",
+                }}
+              >
+                <div
+                  className="frame"
+                  style={{ backgroundColor: frameBgColor }}
+                >
+                  <div
+                    className="frame-username"
+                    style={{ backgroundColor: banner }}
+                  >
+                    <img
+                      src="https://www.w3schools.com/howto/img_avatar.png"
+                      alt="Avatar"
+                      className="frame-img"
+                    />
+                    <h2 style={{ color: buttonTextColor }}>
+                      @{userData.username}
+                    </h2>
+                  </div>
+
+                  <div className="frame-buttons">
+                    {["Link", "Shop"].map((tab) => (
+                      <button
+                        key={tab}
+                        className={`tab-btn ${
+                          selectedTab === tab ? "active" : ""
+                        }`}
+                        onClick={() => setSelectedTab(tab)}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="content1">
+                    {selectedTab === "Link" ? (
+                      <div
+                        className="frame-links"
+                        style={{
+                          display: selectedLayout === "grid" ? "grid" : "flex",
+                          gridTemplateColumns:
+                            selectedLayout === "grid" ? "1fr 1fr" : "unset",
+                          flexDirection:
+                            selectedLayout === "Carousel" ? "row" : "column",
+                          height:
+                            selectedLayout === "grid"
+                              ? "150%"
+                              : selectedLayout === "Carousel"
+                              ? "100%"
+                              : "",
+                          width: selectedLayout === "Carousel" ? "35rem" : "",
+                        }}
+                      >
+                        {links.length > 0 ? (
+                          links.map((link) => (
+                            <div
+                              key={link._id}
+                              className="frame-link"
+                              style={{
+                                ...frameStyle,
+                                ...(["grid", "Carousel"].includes(
+                                  selectedLayout
+                                ) && {
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  height:
+                                    selectedLayout === "grid"
+                                      ? "8rem"
+                                      : selectedLayout === "Carousel"
+                                      ? "100%"
+                                      : "",
+                                  width: "100%",
+                                  flexDirection: "column",
+                                }),
+                              }}
+                            >
+                              <span className="frame-icon">
+                                <img
+                                  src={
+                                    appIcon.find(
+                                      (icon) =>
+                                        icon.application === link.application
+                                    )?.value
+                                  }
+                                  alt={link.application}
+                                />
+                              </span>
+
+                              <span
+                                style={{
+                                  textAlign: ["grid", "Carousel"].includes(
+                                    selectedLayout
+                                  )
+                                    ? "center"
+                                    : "left",
+                                }}
+                              >
+                                {link.linktitle}
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No links available</p>
+                        )}
+                      </div>
+                    ) : (
+                      <div
+                        className="frame-links"
+                        style={{
+                          display: selectedLayout === "grid" ? "grid" : "flex",
+                          gridTemplateColumns:
+                            selectedLayout === "grid" ? "1fr 1fr" : "unset",
+                          flexDirection:
+                            selectedLayout === "Carousel" ? "row" : "column",
+                          height: selectedLayout === "Carousel" ? "100%" : "",
+                          width: selectedLayout === "Carousel" ? "35rem" : "",
+                        }}
+                      >
+                        {shops.length > 0 ? (
+                          shops.map((shop) => (
+                            <div
+                              key={shop._id}
+                              className="frame-link"
+                              onClick={() =>
+                                window.open(shop.shopurl, "_blank")
+                              }
+                              style={{
+                                ...frameStyle,
+                                ...(["grid", "Carousel"].includes(
+                                  selectedLayout
+                                ) && {
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  height:
+                                    selectedLayout === "grid"
+                                      ? "8rem"
+                                      : selectedLayout === "Carousel"
+                                      ? "100%"
+                                      : "",
+                                  width: "100%",
+                                  flexDirection: "column",
+                                }),
+                              }}
+                            >
+                              <span className="frame-icon">
+                                <img
+                                  src={
+                                    appIcon.find(
+                                      (icon) =>
+                                        icon.application === shop.application
+                                    )?.value
+                                  }
+                                  alt={shop.application}
+                                />
+                              </span>
+
+                              <span
+                                style={{
+                                  textAlign: ["grid", "Carousel"].includes(
+                                    selectedLayout
+                                  )
+                                    ? "center"
+                                    : "left",
+                                }}
+                              >
+                                {shop.shopname}
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No shops available</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <button className="get-connected">Get Connected</button>
+
+                  <div className="last-logo">
+                    <img src={lastlogo} alt="Logo" />
+                  </div>
+                </div>
+              </div>
+              <button className="people" onClick={handleClose}>
+                x
+              </button>
+            </>
+          )}
+
           <div className="profile-container">
+            <button className="open-frame" onClick={handleClick}>
+              <i className="ri-eye-line"></i> Preview
+            </button>
             <div className="layout">
               <label className="nameoflay">Layout</label>
               <div className="layout-buttons">
