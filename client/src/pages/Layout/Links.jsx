@@ -826,6 +826,7 @@ function Links() {
                                   flexDirection: "column",
                                 }),
                               }}
+                              onClick={() => handleRedirect(link, "link")}
                             >
                               <span className="frame-icon">
                                 <img
@@ -874,9 +875,15 @@ function Links() {
                             <div
                               key={shop._id}
                               className="frame-link"
-                              onClick={() =>
-                                window.open(shop.shopurl, "_blank")
-                              }
+                              onClick={async () => {
+                                await handleRedirect(shop, "shop"); // Ensure tracking is recorded
+                                window.open(
+                                  shop.shopurl.startsWith("http")
+                                    ? shop.shopurl
+                                    : `https://${shop.shopurl}`,
+                                  "_blank"
+                                );
+                              }}
                               style={{
                                 ...frameStyle,
                                 ...(["grid", "Carousel"].includes(
@@ -891,7 +898,7 @@ function Links() {
                                       : selectedLayout === "Carousel"
                                       ? "100%"
                                       : "",
-                                  width: "100%",
+                                  width: "90%",
                                   flexDirection: "column",
                                 }),
                               }}
