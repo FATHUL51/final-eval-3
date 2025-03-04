@@ -3,7 +3,9 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { useEffect } from "react";
 import "./Navbar.css";
-import share from "../../assets/components/Vector-2.png"; // Ensure correct path
+import share from "../../assets/components/Vector-2.png";
+import Toastify from "toastify-js";
+import "toastify-js/src/toastify.css";
 
 const Navbar = () => {
   const [userData, setUserData] = useState({
@@ -33,8 +35,33 @@ const Navbar = () => {
   }, []);
   const location = useLocation();
 
-  const handleShare = () => {
-    console.log("Share button clicked");
+  const showSuccessToast = (message) => {
+    Toastify({
+      text: `<span class="toast-message">${message}</span><span class="toast-close">×</span>`,
+      duration: 3000,
+      close: false,
+      gravity: "top",
+      position: "center",
+      className: "toastify success-toast",
+      escapeMarkup: false,
+    }).showToast();
+  };
+
+  const showErrorToast = (message) => {
+    Toastify({
+      text: `<span class="toast-message">${message}</span><span class="toast-close">×</span>`,
+      duration: 3000,
+      close: false,
+      gravity: "top",
+      position: "center",
+      className: "toastify error-toast",
+      escapeMarkup: false,
+    }).showToast();
+  };
+
+  const handleShare = async () => {
+    navigator.clipboard.writeText(`http://spark-tree.vercel.app`);
+    showSuccessToast("link copied");
   };
 
   return (
