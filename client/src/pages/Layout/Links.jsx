@@ -18,7 +18,7 @@ import youtube from "../../assets/icons/icons8-youtube-48.png";
 import xpng from "../../assets/icons/icons8-twitter-50.png";
 import facebook from "../../assets/icons/icons8-facebook-logo-48.png";
 import delete1 from "../../assets/icons/material-symbols-light_delete-outline.png";
-import paste from "../../assets/icons/Frame.svg";
+import paste from "../../assets/components/Frame.svg";
 import WooCommerce from "../../assets/icons/icons8-woocommerce-24.png";
 import BigCommerce from "../../assets/icons/icons8-bigcommerce-48.png";
 import shopify from "../../assets/icons/icons8-shopify-48.png";
