@@ -112,10 +112,10 @@
     }
     .sidebar-logo{
         position: fixed;
-        top:0;
+        top:0rem;
         left: 10px;
         width: 8rem;
-        margin-top: .7rem;
+        margin-top: 2rem;
     }
     .menu-item{
         display: flex;
@@ -131,7 +131,7 @@
         height: 2rem;
         display: flex;
         position: fixed;
-        top:1rem;
+        top:2rem;
         right: 2rem;
         margin-top: 0;
         h4{
