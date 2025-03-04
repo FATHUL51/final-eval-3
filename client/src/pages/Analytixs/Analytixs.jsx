@@ -15,7 +15,9 @@ import {
   Pie,
   Cell,
   Legend,
+  ResponsiveContainer, // ✅ Add this
 } from "recharts";
+
 import axios from "axios";
 
 const COLORS = ["#66cdaa", "#2ecc71", "#27ae60", "#16a085"];
@@ -246,24 +248,28 @@ const Analytixs = () => {
                 {/* Pie Chart - Sources */}
                 <div className="chart-box">
                   <h3>Sources</h3>
-                  <PieChart width={200} height={200}>
-                    <Pie
-                      data={dataPie}
-                      dataKey="value"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={60}
-                      label
-                    >
-                      {dataPie.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Legend />
-                  </PieChart>
+                  <div style={{ width: "100%", height: 300 }}>
+                    <ResponsiveContainer>
+                      <PieChart>
+                        <Pie
+                          data={dataPie}
+                          dataKey="value"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius="100%" // Make the circle fill more space
+                          label
+                        >
+                          {dataPie.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={COLORS[index % COLORS.length]}
+                            />
+                          ))}
+                        </Pie>
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
 
                 {/* Bar Chart - Traffic by Links */}
