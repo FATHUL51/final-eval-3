@@ -85,7 +85,11 @@
     margin-bottom: 16px;
 }
 /* Add media queries for mobile view */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
+  .contentsss{
+    padding-left: 0;
+    padding-bottom: 5rem;
+  }
     .overview {
       display: flex;
       flex-direction: row;
