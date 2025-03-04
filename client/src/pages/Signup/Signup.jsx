@@ -26,6 +26,7 @@ const Signup = () => {
   const [hasCheckedTerms, setHasCheckedTerms] = useState(false);
   const [hasTypedPassword, setHasTypedPassword] = useState(false);
   const [hasTypedConfirmPass, setHasTypedConfirmPass] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
   const navigate = useNavigate();
   const { setUser } = useContext(UserDataContext);
@@ -216,8 +217,23 @@ const Signup = () => {
     if (!confirmpass) return "black";
     return password === confirmpass ? "green" : "red";
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1023);
+    };
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
-    <div className="mains">
+    <div
+      className="mains"
+      style={{
+        display: isMobile ? "flex" : "grid",
+      }}
+    >
       <div className="maincontainers">
         <Logo />
         <h1 className="sparkss">Sign up to your Spark</h1>

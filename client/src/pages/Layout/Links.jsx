@@ -1019,48 +1019,92 @@ function Links() {
               </button>
               <div className="content">
                 {selectedTab === "Link" && links.length > 0 && (
-                  <ul>
+                  <ul
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1rem",
+                    }}
+                  >
                     {links.map((link, index) => (
-                      <li key={index}>
-                        <h5>
-                          {link.linktitle}{" "}
-                          <button
-                            className="edits"
-                            onClick={() => handleEdit(link)}
-                          >
-                            <img src={edit} />
-                          </button>
-                        </h5>
-                        <div>
-                          <div className="toggle-switch">
-                            <input
-                              className="toggle-input"
-                              id="toggle"
-                              type="checkbox"
-                              defaultChecked
-                              disabled
-                            />
-                            <label className="toggle-label" htmlFor="toggle" />
-                          </div>
-                        </div>
-                        <h5>
-                          {link.linkurl}{" "}
-                          <button
-                            className="edits"
-                            onClick={() => handleEdit(link)}
-                          >
-                            <img src={edit} />
-                          </button>
-                        </h5>
-
-                        <button
-                          className="deletes"
-                          onClick={() => {
-                            handleDelete(link._id);
+                      <li
+                        className="liitems"
+                        key={index}
+                        style={{
+                          backgroundColor: "#F3F3F1",
+                          padding: "1rem 1rem 1rem 1.5rem",
+                          borderRadius: "1rem",
+                        }}
+                      >
+                        <div
+                          className="titleslink"
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
                           }}
                         >
-                          <img src={delete1} alt="" />
-                        </button>
+                          <h5>
+                            {link.linktitle}{" "}
+                            <button
+                              className="edits"
+                              style={{
+                                backgroundColor: "transparent",
+                                border: "none",
+                              }}
+                              onClick={() => handleEdit(link)}
+                            >
+                              <img src={edit} />
+                            </button>
+                          </h5>
+                          <div>
+                            <div className="toggle-switch">
+                              <input
+                                className="toggle-input"
+                                id="toggle"
+                                type="checkbox"
+                                defaultChecked
+                                disabled
+                              />
+                              <label
+                                className="toggle-label"
+                                htmlFor="toggle"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <p>
+                            {link.linkurl}{" "}
+                            <button
+                              style={{
+                                backgroundColor: "transparent",
+                                border: "none",
+                              }}
+                              className="edits"
+                              onClick={() => handleEdit(link)}
+                            >
+                              <img src={edit} />
+                            </button>
+                          </p>
+
+                          <button
+                            style={{
+                              backgroundColor: "transparent",
+                              border: "none",
+                            }}
+                            className="deletes"
+                            onClick={() => {
+                              handleDelete(link._id);
+                            }}
+                          >
+                            <img src={delete1} style={{ width: "1.5rem" }} />
+                          </button>
+                        </div>
                       </li>
                     ))}
                   </ul>

@@ -9,7 +9,9 @@
 ::-webkit-scrollbar {
     display: none;
 }
-
+ul {
+    list-style-type: none;
+}
 .container1 {
     display: grid;
     grid-template-columns: 0.1fr 1fr;
@@ -323,9 +325,14 @@
     border-radius: 10px;
     margin-top: 2rem;
     display: flex;
+    height: 31vh;
     flex-direction: column;
     gap: 2rem;
     margin-bottom: 2rem;
+}
+
+.content{
+    overflow-y: scroll;
 }
 
 .add-link-container button {
@@ -643,5 +650,8 @@
     }
     .pastelinks{
         top:0;
+    }
+    .add-link-container{
+        height: 75vh;
     }
   }
