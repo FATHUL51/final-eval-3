@@ -35,5 +35,6 @@
     .frames{
         border: none;
         margin: 0;
+        height: 100%;
     }
 }
