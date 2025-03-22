@@ -76,7 +76,8 @@ const UserPreference = () => {
 
       if (response.status === 200) {
         showSuccessToast("Successfully logged in");
-        navigate("/links");
+        localStorage.removeItem("token");
+        navigate("/login");
         window.location.reload();
       }
     } catch (error) {
