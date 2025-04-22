@@ -1110,48 +1110,92 @@ function Links() {
                   </ul>
                 )}
                 {selectedTab === "Shop" && shops.length > 0 && (
-                  <ul>
+                  <ul
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1rem",
+                    }}
+                  >
                     {shops.map((shop, index) => (
-                      <li key={index}>
-                        <h5>
-                          {shop.shopname}{" "}
-                          <button
-                            className="edits"
-                            onClick={() => handleEdit(shop)}
-                          >
-                            <img src={edit} />
-                          </button>
-                        </h5>
-                        <div>
-                          <div className="toggle-switch">
-                            <input
-                              className="toggle-input"
-                              id="toggle"
-                              type="checkbox"
-                              defaultChecked
-                              disabled
-                            />
-                            <label className="toggle-label" htmlFor="toggle" />
-                          </div>
-                        </div>
-                        <h5>
-                          {shop.shopurl}{" "}
-                          <button
-                            className="edits"
-                            onClick={() => handleEdit(shop)}
-                          >
-                            <img src={edit} />
-                          </button>
-                        </h5>
-
-                        <button
-                          className="deletes"
-                          onClick={() => {
-                            handleDelete(shop._id);
+                      <li
+                        className="liitems"
+                        key={index}
+                        style={{
+                          backgroundColor: "#F3F3F1",
+                          padding: "1rem 1rem 1rem 1.5rem",
+                          borderRadius: "1rem",
+                        }}
+                      >
+                        <div
+                          className="titleslink"
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
                           }}
                         >
-                          <img src={delete1} alt="" />
-                        </button>
+                          <h5>
+                            {shop.shopname}{" "}
+                            <button
+                              className="edits"
+                              style={{
+                                backgroundColor: "transparent",
+                                border: "none",
+                              }}
+                              onClick={() => handleEdit(shop)}
+                            >
+                              <img src={edit} />
+                            </button>
+                          </h5>
+                          <div>
+                            <div className="toggle-switch">
+                              <input
+                                className="toggle-input"
+                                id="toggle"
+                                type="checkbox"
+                                defaultChecked
+                                disabled
+                              />
+                              <label
+                                className="toggle-label"
+                                htmlFor="toggle"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <p>
+                            {shop.shopurl}{" "}
+                            <button
+                              style={{
+                                backgroundColor: "transparent",
+                                border: "none",
+                              }}
+                              className="edits"
+                              onClick={() => handleEdit(shop)}
+                            >
+                              <img src={edit} />
+                            </button>
+                          </p>
+
+                          <button
+                            style={{
+                              backgroundColor: "transparent",
+                              border: "none",
+                            }}
+                            className="deletes"
+                            onClick={() => {
+                              handleDelete(shop._id);
+                            }}
+                          >
+                            <img src={delete1} style={{ width: "1.5rem" }} />
+                          </button>
+                        </div>
                       </li>
                     ))}
                   </ul>

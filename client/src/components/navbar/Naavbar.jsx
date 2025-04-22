@@ -65,7 +65,7 @@ const Navbar = () => {
   };
 
   return (
-    <div>
+    <div style={{ position: "sticky", top: "0px" }}>
       <div className="navbar-container">
         {/* Header section with Greeting and Share button */}
         <div className="navbar-header">

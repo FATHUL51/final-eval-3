@@ -465,9 +465,13 @@ const Frame = () => {
           )}
         </div>
 
-        <button className="get-connected" onClick={handleCTA}>
+        <a
+          href="https://spark-tree.vercel.app"
+          className="get-connected"
+          onClick={handleCTA}
+        >
           Get Connected
-        </button>
+        </a>
         <div className="last-logo">
           <img src={lastlogo} alt="" />
         </div>

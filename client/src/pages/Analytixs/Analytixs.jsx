@@ -173,7 +173,7 @@ const Analytixs = () => {
   return (
     <div className="container1">
       <Sidebar />
-      <div className="main-contents">
+      <div className="main-contents" style={{ overflow: "scroll" }}>
         <Navbar />
         <div className="contentsss">
           {loading ? (
