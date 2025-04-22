@@ -349,49 +349,64 @@ const Frame = () => {
               }}
             >
               {links.length > 0 ? (
-                links.map((link) => (
-                  <div
-                    key={link._id}
-                    className="frame-link"
-                    style={{
-                      ...frameStyle,
-                      ...(["grid", "Carousel"].includes(selectedLayout) && {
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        height:
-                          selectedLayout === "grid"
-                            ? "8rem"
-                            : selectedLayout === "Carousel"
-                            ? "100%"
-                            : "",
-                        width: "100%",
-                        flexDirection: "column",
-                      }),
-                    }}
-                    onClick={() => handleRedirect(link, "link")}
-                  >
-                    <span className="frame-icon">
-                      <img
-                        src={
-                          appIcon.find(
-                            (icon) => icon.application === link.application
-                          )?.value
-                        }
-                        alt={link.application}
-                      />
-                    </span>
-                    <span
+                links.map((link) => {
+                  const url = link.linkurl.startsWith("http")
+                    ? link.linkurl
+                    : `https://${link.linkurl}`;
+
+                  return (
+                    <a
+                      key={link._id}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="frame-link"
                       style={{
-                        textAlign: ["grid", "Carousel"].includes(selectedLayout)
-                          ? "center"
-                          : "left",
+                        textDecoration: "none",
+                        ...frameStyle,
+                        ...(["grid", "Carousel"].includes(selectedLayout) && {
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height:
+                            selectedLayout === "grid"
+                              ? "8rem"
+                              : selectedLayout === "Carousel"
+                              ? "100%"
+                              : "",
+                          width: "100%",
+                          flexDirection: "column",
+                        }),
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation(); // just in case
+                        handleRedirect(link, "link");
                       }}
                     >
-                      {link.linktitle}
-                    </span>
-                  </div>
-                ))
+                      <span className="frame-icon">
+                        <img
+                          src={
+                            appIcon.find(
+                              (icon) => icon.application === link.application
+                            )?.value
+                          }
+                          alt={link.application}
+                        />
+                      </span>
+                      <span
+                        style={{
+                          textAlign: ["grid", "Carousel"].includes(
+                            selectedLayout
+                          )
+                            ? "center"
+                            : "left",
+                        }}
+                      >
+                        {link.linktitle}
+                      </span>
+                    </a>
+                  );
+                })
               ) : (
                 <p>No links available</p>
               )}
@@ -409,49 +424,64 @@ const Frame = () => {
               }}
             >
               {shops.length > 0 ? (
-                shops.map((shop) => (
-                  <div
-                    key={shop._id}
-                    className="frame-link"
-                    onClick={() => handleRedirect(shop, "shop")}
-                    style={{
-                      ...frameStyle,
-                      ...(["grid", "Carousel"].includes(selectedLayout) && {
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        height:
-                          selectedLayout === "grid"
-                            ? "8rem"
-                            : selectedLayout === "Carousel"
-                            ? "100%"
-                            : "",
-                        width: "100%",
-                        flexDirection: "column",
-                      }),
-                    }}
-                  >
-                    <span className="frame-icon">
-                      <img
-                        src={
-                          appIcon.find(
-                            (icon) => icon.application === shop.application
-                          )?.value
-                        }
-                        alt={shop.application}
-                      />
-                    </span>
-                    <span
+                shops.map((shop) => {
+                  const url = shop.shopurl.startsWith("http")
+                    ? shop.shopurl
+                    : `https://${shop.shopurl}`;
+
+                  return (
+                    <a
+                      key={shop._id}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="frame-link"
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent bubbling if nested
+                        handleRedirect(shop, "shop"); // for tracking
+                      }}
                       style={{
-                        textAlign: ["grid", "Carousel"].includes(selectedLayout)
-                          ? "center"
-                          : "left",
+                        textDecoration: "none",
+                        ...frameStyle,
+                        ...(["grid", "Carousel"].includes(selectedLayout) && {
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height:
+                            selectedLayout === "grid"
+                              ? "8rem"
+                              : selectedLayout === "Carousel"
+                              ? "100%"
+                              : "",
+                          width: "100%",
+                          flexDirection: "column",
+                        }),
                       }}
                     >
-                      {shop.shopname}
-                    </span>
-                  </div>
-                ))
+                      <span className="frame-icon">
+                        <img
+                          src={
+                            appIcon.find(
+                              (icon) => icon.application === shop.application
+                            )?.value
+                          }
+                          alt={shop.application}
+                        />
+                      </span>
+                      <span
+                        style={{
+                          textAlign: ["grid", "Carousel"].includes(
+                            selectedLayout
+                          )
+                            ? "center"
+                            : "left",
+                        }}
+                      >
+                        {shop.shopname}
+                      </span>
+                    </a>
+                  );
+                })
               ) : (
                 <p>No shops available</p>
               )}
