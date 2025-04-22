@@ -267,13 +267,14 @@ const Frame = () => {
         url = `https://${url}`;
       }
 
+      // Track the click
       await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/track/click`,
         {
-          userId: id, // Use correct user ID
-          itemId: item._id, // **Yeh NULL ya UNDEFINED ho sakta hai**
+          userId: id,
+          itemId: item._id || "unknown",
           type,
-          application: item.application,
+          application: item.application || "Unknown",
           os: deviceInfo.os,
           ip: deviceInfo.ipAddress,
         },
@@ -282,6 +283,7 @@ const Frame = () => {
         }
       );
 
+      // Open in new tab — ONE place, always here
       window.open(url, "_blank");
     } catch (error) {
       console.error("Error tracking click:", error);
@@ -411,15 +413,7 @@ const Frame = () => {
                   <div
                     key={shop._id}
                     className="frame-link"
-                    onClick={async () => {
-                      await handleRedirect(shop, "shop"); // Ensure tracking is recorded
-                      window.open(
-                        shop.shopurl.startsWith("http")
-                          ? shop.shopurl
-                          : `https://${shop.shopurl}`,
-                        "_blank"
-                      );
-                    }}
+                    onClick={() => handleRedirect(shop, "shop")}
                     style={{
                       ...frameStyle,
                       ...(["grid", "Carousel"].includes(selectedLayout) && {
